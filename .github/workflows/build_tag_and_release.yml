@@ -1,0 +1,67 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Build, tag and release Java project
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write  # Required for creating Git tags
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 21a
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'zulu'
+        cache: maven
+        server-id: central
+        server-username: MAVEN_USERNAME # env variable for username in deploy
+        server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
+        gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Value of the GPG private key to import
+        gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
+
+    - name: Test with Maven
+      run: ./mvnw clean -U test -Drevision=1.${{github.run_number}}
+    - name: Configure Git
+      run: git config --global --add safe.directory /github/workspace
+    - name: Git tag
+      uses: cardinalby/git-tag-action@master
+      env:
+        TAG: 1.${{github.run_number}}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Set Release Version
+      run: |
+        VERSION="1.${{github.run_number}}"
+        echo "Setting version to: $VERSION"
+        ./mvnw versions:set -DnewVersion=$VERSION --batch-mode --no-transfer-progress
+        echo "Version updated in pom.xml:"
+        grep -A1 -B1 "<version>" pom.xml | head -3
+    - name: Verify Release Version
+      run: |
+        VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Maven project version: $VERSION"
+        if [[ $VERSION == *"SNAPSHOT"* ]]; then
+          echo "ERROR: Cannot deploy SNAPSHOT version to Maven Central"
+          exit 1
+        fi
+    - name: Publish to Maven Central
+      run: ./mvnw clean deploy -P deployment -Dmaven.test.skip --batch-mode --no-transfer-progress
+      env:
+        MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+        MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
