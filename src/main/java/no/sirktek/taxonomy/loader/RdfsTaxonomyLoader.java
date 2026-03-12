@@ -7,6 +7,7 @@ import no.sirktek.taxonomy.model.TaxonomyTree;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.rdf.model.ResourceFactory;
 
 import java.io.InputStream;
 import java.util.*;
@@ -18,6 +19,13 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public abstract class RdfsTaxonomyLoader {
+
+    /**
+     * schema:domainIncludes — used instead of rdfs:domain for union semantics
+     * (multiple rdfs:domain triples imply intersection; schema:domainIncludes implies union)
+     */
+    private static final Property SCHEMA_DOMAIN_INCLUDES =
+            ResourceFactory.createProperty("https://schema.org/domainIncludes");
 
     /**
      * Default constructor
@@ -255,12 +263,21 @@ public abstract class RdfsTaxonomyLoader {
     }
 
     /**
-     * Check if a property has the specified class as its domain
+     * Check if a property has the specified class as its domain.
+     * Supports both rdfs:domain (single-domain) and schema:domainIncludes (union-domain).
      */
     private boolean hasDomain(Resource propertyResource, String classUri) {
         StmtIterator domainStatements = propertyResource.listProperties(RDFS.domain);
         while (domainStatements.hasNext()) {
             Statement stmt = domainStatements.nextStatement();
+            Resource domainResource = stmt.getResource();
+            if (classUri.equals(domainResource.getURI())) {
+                return true;
+            }
+        }
+        StmtIterator domainIncludesStatements = propertyResource.listProperties(SCHEMA_DOMAIN_INCLUDES);
+        while (domainIncludesStatements.hasNext()) {
+            Statement stmt = domainIncludesStatements.nextStatement();
             Resource domainResource = stmt.getResource();
             if (classUri.equals(domainResource.getURI())) {
                 return true;
