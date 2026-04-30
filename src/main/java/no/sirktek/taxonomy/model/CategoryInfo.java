@@ -34,4 +34,12 @@ public record CategoryInfo(
         return parentClassName == null;
     }
 
+    /**
+     * Stable negative Long ID derived from this category's URI.
+     * See {@link RdfsCategoryIds} for the contract.
+     */
+    public Long negativeId() {
+        return RdfsCategoryIds.negativeIdFromUri(uri);
+    }
+
 }
