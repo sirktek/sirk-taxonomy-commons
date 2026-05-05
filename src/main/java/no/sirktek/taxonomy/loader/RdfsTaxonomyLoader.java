@@ -28,6 +28,13 @@ public abstract class RdfsTaxonomyLoader {
             ResourceFactory.createProperty("https://schema.org/domainIncludes");
 
     /**
+     * skos:altLabel — alternative human-readable label for a class. Used to map legacy
+     * category strings whose phrasing diverged from the canonical rdfs:label.
+     */
+    private static final Property SKOS_ALT_LABEL =
+            ResourceFactory.createProperty("http://www.w3.org/2004/02/skos/core#altLabel");
+
+    /**
      * Default constructor
      */
     public RdfsTaxonomyLoader() {
@@ -169,6 +176,7 @@ public abstract class RdfsTaxonomyLoader {
         return CategoryInfo.builder()
                 .className(category.className())
                 .englishName(category.englishName())
+                .englishAltLabels(category.englishAltLabels())
                 .norwegianName(category.norwegianName())
                 .description(category.description())
                 .parentClassName(category.parentClassName())
@@ -188,6 +196,7 @@ public abstract class RdfsTaxonomyLoader {
         // Get labels
         String englishName = getLabel(classResource, "en");
         String norwegianName = getLabel(classResource, "no");
+        List<String> englishAltLabels = getAltLabels(classResource, "en");
 
         if (englishName == null) {
             englishName = className; // Fallback to class name
@@ -218,6 +227,7 @@ public abstract class RdfsTaxonomyLoader {
         return CategoryInfo.builder()
                 .className(className)
                 .englishName(englishName)
+                .englishAltLabels(englishAltLabels)
                 .norwegianName(norwegianName)
                 .description(description)
                 .parentClassName(parentClassName)
@@ -240,6 +250,23 @@ public abstract class RdfsTaxonomyLoader {
             }
         }
         return null;
+    }
+
+    /**
+     * Get all skos:altLabel values for a resource in the given language. Returns an
+     * empty list when none are declared.
+     */
+    private List<String> getAltLabels(Resource resource, String language) {
+        List<String> alts = new ArrayList<>();
+        StmtIterator labelStatements = resource.listProperties(SKOS_ALT_LABEL);
+        while (labelStatements.hasNext()) {
+            Statement stmt = labelStatements.nextStatement();
+            Literal literal = stmt.getLiteral();
+            if (literal != null && language.equals(literal.getLanguage())) {
+                alts.add(literal.getString());
+            }
+        }
+        return alts;
     }
 
     /**
