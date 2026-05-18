@@ -42,11 +42,11 @@ jobs:
     - name: Git tag
       uses: cardinalby/git-tag-action@master
       env:
-        TAG: 2.${{github.run_number}}
+        TAG: 3.${{github.run_number}}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Set Release Version
       run: |
-        VERSION="2.${{github.run_number}}"
+        VERSION="3.${{github.run_number}}"
         echo "Setting version to: $VERSION"
         ./mvnw versions:set -DnewVersion=$VERSION --batch-mode --no-transfer-progress
         echo "Version updated in pom.xml:"

@@ -1,0 +1,103 @@
+@prefix common: <http://taxonomy.sirktek.no/common#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+# ===================================================================
+# Common Taxonomy
+# -------------------------------------------------------------------
+# Cross-cutting categories shared by all domain taxonomies (furniture,
+# logistics, machine, ...). Originally lived in furniture-taxonomy (and
+# EnergySourceEntry in logistics-taxonomy); extracted to common in 3.0
+# so they can be referenced from any namespace without domain leakage.
+# ===================================================================
+
+# -------------------------------------------------------------------
+# Cross-cutting categories
+# -------------------------------------------------------------------
+
+common:Manufacturer a rdfs:Class ;
+    rdfs:label "Manufacturer"@en, "Produsent"@no ;
+    rdfs:comment "Manufacturer or supplier of a product"@en .
+
+common:Model a rdfs:Class ;
+    rdfs:label "Model"@en, "Modell"@no ;
+    rdfs:comment "Specific product model produced by a manufacturer"@en .
+
+common:Resource a rdfs:Class ;
+    rdfs:label "Resource"@en, "Ressurs"@no ;
+    rdfs:comment "Material or resource consumed in producing a product (LCA input side)"@en .
+
+# -------------------------------------------------------------------
+# Property range marker classes
+#
+# These describe the shape of complex property values, not user-facing
+# categories. Consumers of MergedTaxonomyService filter these out of
+# user-visible taxonomy trees via the *Entry naming convention
+# (see CategoryTaxonomyTreeService#isPropertyRangeMarker in
+# sirk-orgadmin-backend).
+# -------------------------------------------------------------------
+
+common:EmissionEntry a rdfs:Class ;
+    rdfs:label "Emission Entry"@en ;
+    rdfs:comment "A per-LCA-module CO2e emission entry (module, amount, unit, certification, source)"@en .
+
+common:ConsistsOfEntry a rdfs:Class ;
+    rdfs:label "Consists Of Entry"@en ;
+    rdfs:comment "A bill-of-materials entry: component category reference with an amount (categoryId, amount)"@en .
+
+common:EnergySourceEntry a rdfs:Class ;
+    rdfs:label "Energy Source Entry"@en ;
+    rdfs:comment "An energy mix entry (source, amount, co2ePerUnit) describing a portion of an energy consumption profile"@en .
+
+# -------------------------------------------------------------------
+# Manufacturer properties
+# -------------------------------------------------------------------
+
+common:address a rdf:Property ;
+    rdfs:label "Address"@en, "Adresse"@no ;
+    rdfs:domain common:Manufacturer ;
+    rdfs:range xsd:string .
+
+common:organizationNumber a rdf:Property ;
+    rdfs:label "Organization Number"@en, "Organisasjonsnummer"@no ;
+    rdfs:domain common:Manufacturer ;
+    rdfs:range xsd:string .
+
+common:homepage a rdf:Property ;
+    rdfs:label "Homepage"@en, "Hjemmeside"@no ;
+    rdfs:domain common:Manufacturer ;
+    rdfs:range xsd:anyURI .
+
+# -------------------------------------------------------------------
+# Model properties
+# -------------------------------------------------------------------
+
+common:manufacturer a rdf:Property ;
+    rdfs:label "Manufacturer"@en, "Produsent"@no ;
+    rdfs:domain common:Model ;
+    rdfs:range common:Manufacturer .
+
+common:epd a rdf:Property ;
+    rdfs:label "Environmental Product Declaration"@en, "Miljødeklarasjon"@no ;
+    rdfs:domain common:Model ;
+    rdfs:range xsd:anyURI .
+
+common:productPage a rdf:Property ;
+    rdfs:label "Product Page"@en, "Produktside"@no ;
+    rdfs:domain common:Model ;
+    rdfs:range xsd:anyURI .
+
+# -------------------------------------------------------------------
+# Resource properties
+# -------------------------------------------------------------------
+
+common:unit a rdf:Property ;
+    rdfs:label "Unit"@en, "Enhet"@no ;
+    rdfs:domain common:Resource ;
+    rdfs:range xsd:string .
+
+common:resourceType a rdf:Property ;
+    rdfs:label "Resource Type"@en, "Ressurstype"@no ;
+    rdfs:domain common:Resource ;
+    rdfs:range xsd:string .
