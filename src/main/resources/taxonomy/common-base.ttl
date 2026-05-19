@@ -52,26 +52,6 @@ common:EnergySourceEntry a rdfs:Class ;
     rdfs:comment "An energy mix entry (source, amount, co2ePerUnit) describing a portion of an energy consumption profile"@en .
 
 # -------------------------------------------------------------------
-# Resource variant enumeration
-# -------------------------------------------------------------------
-
-common:ResourceVariant a rdfs:Class ;
-    rdfs:label "Resource Variant"@en, "Ressursvariant"@no ;
-    rdfs:comment "Enumeration of sensitivity / scenario variants applied to a resource property value"@en .
-
-common:Baseline a common:ResourceVariant ;
-    rdfs:label "Baseline"@en, "Grunnverdi"@no ;
-    rdfs:comment "Baseline value (no adjustment)"@en .
-
-common:Plus20Percent a common:ResourceVariant ;
-    rdfs:label "+20%"@en, "+20%"@no ;
-    rdfs:comment "20% above baseline"@en .
-
-common:Minus20Percent a common:ResourceVariant ;
-    rdfs:label "-20%"@en, "-20%"@no ;
-    rdfs:comment "20% below baseline"@en .
-
-# -------------------------------------------------------------------
 # Manufacturer properties
 # -------------------------------------------------------------------
 
