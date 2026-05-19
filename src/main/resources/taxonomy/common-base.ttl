@@ -2,6 +2,7 @@
 @prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <https://schema.org/> .
 
 # ===================================================================
 # Common Taxonomy
@@ -49,6 +50,26 @@ common:ConsistsOfEntry a rdfs:Class ;
 common:EnergySourceEntry a rdfs:Class ;
     rdfs:label "Energy Source Entry"@en ;
     rdfs:comment "An energy mix entry (source, amount, co2ePerUnit) describing a portion of an energy consumption profile"@en .
+
+# -------------------------------------------------------------------
+# Resource variant enumeration
+# -------------------------------------------------------------------
+
+common:ResourceVariant a rdfs:Class ;
+    rdfs:label "Resource Variant"@en, "Ressursvariant"@no ;
+    rdfs:comment "Enumeration of sensitivity / scenario variants applied to a resource property value"@en .
+
+common:Baseline a common:ResourceVariant ;
+    rdfs:label "Baseline"@en, "Grunnverdi"@no ;
+    rdfs:comment "Baseline value (no adjustment)"@en .
+
+common:Plus20Percent a common:ResourceVariant ;
+    rdfs:label "+20%"@en, "+20%"@no ;
+    rdfs:comment "20% above baseline"@en .
+
+common:Minus20Percent a common:ResourceVariant ;
+    rdfs:label "-20%"@en, "-20%"@no ;
+    rdfs:comment "20% below baseline"@en .
 
 # -------------------------------------------------------------------
 # Manufacturer properties
@@ -101,3 +122,32 @@ common:resourceType a rdf:Property ;
     rdfs:label "Resource Type"@en, "Ressurstype"@no ;
     rdfs:domain common:Resource ;
     rdfs:range xsd:string .
+
+# -------------------------------------------------------------------
+# Cross-cutting LCA properties
+#
+# Defined here so domain taxonomies (furniture, machine, ...) can
+# reuse the same property URI and just extend the domain with their
+# own root class via an additional `schema:domainIncludes` triple in
+# their own ttl. Merged into a single Jena graph at load time.
+# -------------------------------------------------------------------
+
+common:emissionPerUnit a rdf:Property ;
+    rdfs:label "Emission per Unit"@en ;
+    schema:domainIncludes common:Model ;
+    schema:domainIncludes common:Resource ;
+    rdfs:range common:EmissionEntry .
+
+common:consistsOf a rdf:Property ;
+    rdfs:label "Consists Of"@en ;
+    rdfs:comment "Bill of materials: component categories and their amounts"@en ;
+    schema:domainIncludes common:Model ;
+    schema:domainIncludes common:Resource ;
+    rdfs:range common:ConsistsOfEntry .
+
+common:resourceVariant a rdf:Property ;
+    rdfs:label "Resource Variant"@en, "Ressursvariant"@no ;
+    rdfs:comment "Sensitivity / scenario variant applied to a resource value (Baseline, +20%, -20%)"@en ;
+    schema:domainIncludes common:Model ;
+    schema:domainIncludes common:Resource ;
+    rdfs:range common:ResourceVariant .
