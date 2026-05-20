@@ -27,6 +27,7 @@ public class CommonPropertyDefinition {
             case "http://taxonomy.sirktek.no/common#EmissionEntry"      -> PropertyType.EMISSION;
             case "http://taxonomy.sirktek.no/common#ConsistsOfEntry"    -> PropertyType.CONSISTS_OF;
             case "http://taxonomy.sirktek.no/common#EnergySourceEntry"  -> PropertyType.ENERGY_MIX;
+            case "http://taxonomy.sirktek.no/common#AllocationEntry"    -> PropertyType.ALLOCATIONS;
             default -> null;
         };
     }
@@ -41,6 +42,8 @@ public class CommonPropertyDefinition {
         /** A bill-of-materials list of component category references with amounts. */
         CONSISTS_OF,
         /** A list of energy source entries describing an energy mix profile. */
-        ENERGY_MIX
+        ENERGY_MIX,
+        /** A list of allocation buckets partitioning yearly emissions across capacity dimensions. */
+        ALLOCATIONS
     }
 }

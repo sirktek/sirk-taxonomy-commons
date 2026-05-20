@@ -51,6 +51,10 @@ common:EnergySourceEntry a rdfs:Class ;
     rdfs:label "Energy Source Entry"@en ;
     rdfs:comment "An energy mix entry (source, amount, co2ePerUnit) describing a portion of an energy consumption profile"@en .
 
+common:AllocationEntry a rdfs:Class ;
+    rdfs:label "Allocation Entry"@en ;
+    rdfs:comment "One allocation bucket on a location: a named capacity dimension (e.g. storage volume, workstation count) with the share of the location's yearly emissions that should be attributed to it"@en .
+
 # -------------------------------------------------------------------
 # Manufacturer properties
 # -------------------------------------------------------------------
