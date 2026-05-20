@@ -123,6 +123,16 @@
 
     <profiles>
         <profile>
+            <id>github-packages</id>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub Packages</name>
+                    <url>https://maven.pkg.github.com/sirktek/sirk-taxonomy-commons</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
             <id>deployment</id>
             <build>
                 <plugins>
