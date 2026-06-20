@@ -95,7 +95,7 @@ class CommonTaxonomyServiceTest {
 
     @Test
     void rangeMarkerClassesHaveNoProperties() {
-        for (String marker : List.of("EmissionEntry", "ConsistsOfEntry", "EnergySourceEntry")) {
+        for (String marker : List.of("EmissionEntry", "ConsistsOfEntry", "EnergySourceEntry", "AllocationEntry", "AssetValueEntry")) {
             CategoryInfo cat = taxonomyService.getCategoryByClassName(marker).orElseThrow();
             assertEquals(0, cat.properties().size(),
                     marker + " is a property-range marker — should declare no rdf:Property of its own");

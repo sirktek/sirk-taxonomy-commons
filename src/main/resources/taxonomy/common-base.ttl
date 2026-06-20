@@ -55,6 +55,10 @@ common:AllocationEntry a rdfs:Class ;
     rdfs:label "Allocation Entry"@en ;
     rdfs:comment "One allocation bucket on a location: a named capacity dimension (e.g. storage volume, workstation count) with the share of the location's yearly emissions that should be attributed to it"@en .
 
+common:AssetValueEntry a rdfs:Class ;
+    rdfs:label "Asset Value Entry"@en ;
+    rdfs:comment "A per-year asset valuation entry (year, value) — e.g. the Norwegian formuesverdi (wealth-tax value) of a machine or real-estate asset, expressed in NOK"@en .
+
 # -------------------------------------------------------------------
 # Manufacturer properties
 # -------------------------------------------------------------------
@@ -135,3 +139,18 @@ common:resourceVariant a rdf:Property ;
     schema:domainIncludes common:Model ;
     schema:domainIncludes common:Resource ;
     rdfs:range common:ResourceVariant .
+
+# -------------------------------------------------------------------
+# Cross-cutting financial properties
+#
+# assetValue (formuesverdi) is a per-year valuation that applies to
+# durable assets across domains (machine:Machine, logistics:RealEstate,
+# ...). The property is defined here so any domain can reuse the same URI;
+# each domain opts in by adding its own `schema:domainIncludes` triple in
+# its own ttl. Merged into a single Jena graph at load time.
+# -------------------------------------------------------------------
+
+common:assetValue a rdf:Property ;
+    rdfs:label "Asset Value"@en, "Formuesverdi"@no ;
+    rdfs:comment "Per-year asset valuation (formuesverdi): a list of (year, value) entries expressed in NOK"@en ;
+    rdfs:range common:AssetValueEntry .

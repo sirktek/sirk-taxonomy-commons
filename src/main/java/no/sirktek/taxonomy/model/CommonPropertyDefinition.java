@@ -5,7 +5,8 @@ package no.sirktek.taxonomy.model;
  * {@link PropertyType} they should be rendered as.
  *
  * Only the cross-cutting property-range markers are mapped here —
- * EmissionEntry, ConsistsOfEntry, EnergySourceEntry. Domain taxonomies
+ * EmissionEntry, ConsistsOfEntry, EnergySourceEntry, AllocationEntry,
+ * AssetValueEntry. Domain taxonomies
  * (FurniturePropertyDefinition, LogisticsPropertyDefinition,
  * MachinePropertyDefinition) handle their own xsd-* and domain-specific
  * range types. Returns {@code null} for unrecognized ranges so callers
@@ -28,6 +29,7 @@ public class CommonPropertyDefinition {
             case "http://taxonomy.sirktek.no/common#ConsistsOfEntry"    -> PropertyType.CONSISTS_OF;
             case "http://taxonomy.sirktek.no/common#EnergySourceEntry"  -> PropertyType.ENERGY_MIX;
             case "http://taxonomy.sirktek.no/common#AllocationEntry"    -> PropertyType.ALLOCATIONS;
+            case "http://taxonomy.sirktek.no/common#AssetValueEntry"    -> PropertyType.ASSET_VALUE;
             default -> null;
         };
     }
@@ -44,6 +46,8 @@ public class CommonPropertyDefinition {
         /** A list of energy source entries describing an energy mix profile. */
         ENERGY_MIX,
         /** A list of allocation buckets partitioning yearly emissions across capacity dimensions. */
-        ALLOCATIONS
+        ALLOCATIONS,
+        /** A list of per-year asset valuation entries (formuesverdi). */
+        ASSET_VALUE
     }
 }
