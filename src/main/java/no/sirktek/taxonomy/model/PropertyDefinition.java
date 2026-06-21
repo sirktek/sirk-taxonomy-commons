@@ -12,6 +12,9 @@ import lombok.Builder;
  * @param rangeType      RDF range type (e.g., xsd:string, xsd:decimal, etc.)
  * @param domainClass    Domain classes this property applies to
  * @param description    Human-readable description
+ * @param multiValued    Whether the property holds multiple values (e.g. a
+ *                       multi-category reference). Set from the
+ *                       {@code common:multiValued} annotation in the taxonomy.
  */
 @Builder
 public record PropertyDefinition(
@@ -21,5 +24,6 @@ public record PropertyDefinition(
         String uri,
         String rangeType,
         String domainClass,
-        String description) {
+        String description,
+        boolean multiValued) {
 }

@@ -35,6 +35,13 @@ public abstract class RdfsTaxonomyLoader {
             ResourceFactory.createProperty("http://www.w3.org/2004/02/skos/core#altLabel");
 
     /**
+     * common:multiValued — boolean annotation marking a property as holding
+     * multiple values (e.g. a multi-category reference). Absent ⇒ single-valued.
+     */
+    private static final Property COMMON_MULTI_VALUED =
+            ResourceFactory.createProperty("http://taxonomy.sirktek.no/common#multiValued");
+
+    /**
      * Default constructor
      */
     public RdfsTaxonomyLoader() {
@@ -336,6 +343,13 @@ public abstract class RdfsTaxonomyLoader {
             domainClass = getLocalName(domainStmt.getResource().getURI());
         }
 
+        // Cardinality marker: common:multiValued true ⇒ holds multiple values.
+        boolean multiValued = false;
+        Statement multiValuedStmt = propertyResource.getProperty(COMMON_MULTI_VALUED);
+        if (multiValuedStmt != null) {
+            multiValued = multiValuedStmt.getBoolean();
+        }
+
         return PropertyDefinition.builder()
                 .name(name)
                 .englishLabel(englishLabel)
@@ -344,6 +358,7 @@ public abstract class RdfsTaxonomyLoader {
                 .rangeType(rangeType)
                 .domainClass(domainClass)
                 .description(null) // Could add comments if needed
+                .multiValued(multiValued)
                 .build();
     }
 
