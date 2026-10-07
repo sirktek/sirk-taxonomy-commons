@@ -4,9 +4,10 @@ package no.sirktek.taxonomy.model;
  * Maps {@code common:*} property range URIs to the orgadmin-side
  * {@link PropertyType} they should be rendered as.
  *
- * Only the cross-cutting property-range markers are mapped here —
- * EmissionEntry, ConsistsOfEntry, EnergySourceEntry, AllocationEntry,
- * AssetValueEntry. Domain taxonomies
+ * Only the cross-cutting property ranges are mapped here — the *Entry
+ * markers (EmissionEntry, ConsistsOfEntry, EnergySourceEntry,
+ * AllocationEntry, AssetValueEntry) and the DepreciationGroup
+ * enumeration. Domain taxonomies
  * (FurniturePropertyDefinition, LogisticsPropertyDefinition,
  * MachinePropertyDefinition) handle their own xsd-* and domain-specific
  * range types. Returns {@code null} for unrecognized ranges so callers
@@ -30,13 +31,15 @@ public class CommonPropertyDefinition {
             case "http://taxonomy.sirktek.no/common#EnergySourceEntry"  -> PropertyType.ENERGY_MIX;
             case "http://taxonomy.sirktek.no/common#AllocationEntry"    -> PropertyType.ALLOCATIONS;
             case "http://taxonomy.sirktek.no/common#AssetValueEntry"    -> PropertyType.ASSET_VALUE;
+            case "http://taxonomy.sirktek.no/common#DepreciationGroup"  -> PropertyType.DEPRECIATION_GROUP;
             default -> null;
         };
     }
 
     /**
      * Property types contributed by the common taxonomy. Each maps 1:1
-     * to a {@code common:*Entry} range-marker class.
+     * to a {@code common:*} range class: an {@code *Entry} marker for the
+     * list-shaped types, or an enumeration class.
      */
     public enum PropertyType {
         /** A list of per-LCA-module CO2e emission entries. */
@@ -47,7 +50,18 @@ public class CommonPropertyDefinition {
         ENERGY_MIX,
         /** A list of allocation buckets partitioning yearly emissions across capacity dimensions. */
         ALLOCATIONS,
-        /** A list of per-year asset valuation entries (formuesverdi). */
-        ASSET_VALUE
+        /**
+         * A list of per-year asset valuation entries ({@code AssetValueEntry}):
+         * bookValue (bokført verdi), taxValue (skattemessig verdi) and
+         * wealthTaxValue (formuesverdi) share this type.
+         */
+        ASSET_VALUE,
+        /**
+         * A statutory tax depreciation class, the {@code common:DepreciationGroup}
+         * enumeration. The value list is per jurisdiction: read it from
+         * {@link PropertyDefinition#enumValues()} and filter on
+         * {@link EnumValue#jurisdiction()} (Norwegian saldogruppe a–j are "NO").
+         */
+        DEPRECIATION_GROUP
     }
 }

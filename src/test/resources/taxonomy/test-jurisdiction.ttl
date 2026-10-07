@@ -1,0 +1,51 @@
+# Test fixture: exercises the common:jurisdiction annotation on properties.
+@prefix common: <http://taxonomy.sirktek.no/common#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+common:TestAsset a rdfs:Class ;
+    rdfs:label "Test Asset"@en .
+
+common:norwegianOnly a rdf:Property ;
+    rdfs:label "Norwegian Only"@en ;
+    rdfs:domain common:TestAsset ;
+    common:jurisdiction "NO" ;
+    rdfs:range xsd:string .
+
+common:everywhere a rdf:Property ;
+    rdfs:label "Everywhere"@en ;
+    rdfs:domain common:TestAsset ;
+    rdfs:range xsd:string .
+
+# Global enumeration property whose values are tagged per jurisdiction.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+common:TestClass a rdfs:Class ;
+    rdfs:label "Test Class"@en .
+
+common:taxClass a rdf:Property ;
+    rdfs:label "Tax Class"@en, "Skatteklasse"@no ;
+    rdfs:domain common:TestAsset ;
+    rdfs:range common:TestClass .
+
+common:TestClassNoB a common:TestClass ;
+    skos:notation "b" ;
+    rdfs:label "Norwegian B"@en, "Norsk B"@no ;
+    rdfs:comment "second"@en ;
+    common:depreciationRate 20 ;
+    common:jurisdiction "NO" .
+
+common:TestClassNoA a common:TestClass ;
+    skos:notation "a" ;
+    rdfs:label "Norwegian A"@en, "Norsk A"@no ;
+    common:depreciationRate 30 ;
+    common:jurisdiction "NO" .
+
+common:TestClassGbMain a common:TestClass ;
+    rdfs:label "UK main pool"@en ;
+    common:depreciationRate 18 ;
+    common:jurisdiction "GB" .
+
+common:TestClassGlobal a common:TestClass ;
+    rdfs:label "Applies everywhere"@en .

@@ -2,6 +2,8 @@ package no.sirktek.taxonomy.model;
 
 import lombok.Builder;
 
+import java.util.List;
+
 /**
  * Represents a property definition in the RDF-S taxonomy
  *
@@ -15,6 +17,15 @@ import lombok.Builder;
  * @param multiValued    Whether the property holds multiple values (e.g. a
  *                       multi-category reference). Set from the
  *                       {@code common:multiValued} annotation in the taxonomy.
+ * @param jurisdiction   ISO 3166-1 alpha-2 country code when the property only applies
+ *                       under one country's law or accounting rules (e.g. "NO" for the
+ *                       Norwegian depreciationGroup). Set from the
+ *                       {@code common:jurisdiction} annotation; {@code null} means the
+ *                       property applies everywhere.
+ * @param enumValues     the values of an enumeration-typed property: the individuals whose
+ *                       {@code rdf:type} is the range class, in the loaded model. Empty for
+ *                       literal, marker-class and non-enumeration ranges. Each value carries
+ *                       its own jurisdiction so a consumer can filter the list per country.
  */
 @Builder
 public record PropertyDefinition(
@@ -25,5 +36,11 @@ public record PropertyDefinition(
         String rangeType,
         String domainClass,
         String description,
-        boolean multiValued) {
+        boolean multiValued,
+        String jurisdiction,
+        List<EnumValue> enumValues) {
+
+    public PropertyDefinition {
+        enumValues = enumValues == null ? List.of() : List.copyOf(enumValues);
+    }
 }

@@ -53,6 +53,59 @@ Long id = categoryInfo.negativeId();
 
 This ID is a **load-bearing contract** across all consumers of this library. Any change to the algorithm is a breaking change: caches, API responses, exported data, and clients holding old IDs will all become stale. Treat algorithm changes as a coordinated multi-service migration.
 
+## Cross-cutting Accounting and Tax Properties
+
+`common-base.ttl` defines these properties for fixed assets; domain taxonomies opt in with
+`schema:domainIncludes` in their own Turtle file:
+
+| Property | Label (no) | Range | Jurisdiction |
+|----------|------------|-------|--------------|
+| `common:ledgerAccount` | Regnskapskonto | `xsd:string` (e.g. `1200`) | any |
+| `common:bookValue` | Bokført verdi | `common:AssetValueEntry` (year, value) | any |
+| `common:taxValue` | Skattemessig verdi | `common:AssetValueEntry` (year, value) | any |
+| `common:wealthTaxValue` | Formuesverdi | `common:AssetValueEntry` (year, value) | `NO` |
+| `common:depreciationGroup` | Saldogruppe | `common:DepreciationGroup` enumeration | any (values tagged) |
+
+The three per-year values follow three sets of rules: `bookValue` is the balance-sheet carrying
+amount (resultatregnskap), `taxValue` is the tax written-down value that the depreciation group's
+rate is applied to (skatteregnskap), and `wealthTaxValue` is the owners' wealth-tax basis.
+`wealthTaxValue` was previously named `assetValue`, and only real estate opts into it: for
+driftsmidler the formuesverdi is by rule the tax value at 31 December, so consumers derive it. All three share the `AssetValueEntry` shape,
+so a consumer that already renders per-year values needs no new DTO; `CommonPropertyDefinition`
+maps them all to `PropertyType.ASSET_VALUE`. `common:depreciationGroup` maps to
+`PropertyType.DEPRECIATION_GROUP`.
+
+`common:depreciationGroup` is one global property whose value list is per country: every
+instance of `common:DepreciationGroup` carries `common:jurisdiction`. Today the instances are the
+Norwegian saldogrupper `common:DepreciationGroupA` … `J` (skatteloven § 14-41, tag `NO`), each
+with a `skos:notation` ("a" … "j"), bilingual labels and the statutory maximum yearly rate in
+`common:depreciationRate`. Another country adds its own instances with its own tag.
+
+### Enumeration values
+
+When a property's range is a class with instances in the loaded model, the loader exposes them
+as `PropertyDefinition.enumValues()`: a list of `EnumValue(uri, name, notation, englishLabel,
+norwegianLabel, description, jurisdiction, attributes)` sorted by notation then name.
+`attributes` holds the remaining literal statements keyed by local name, e.g.
+`depreciationRate=4`. A consumer shows the values whose `jurisdiction` is `null` or equals the
+organisation's country, and needs no hardcoded list. This applies to every enumeration-typed
+property, e.g. `logistics:type` → `logistics:LocationType`.
+
+### Jurisdiction tagging
+
+Country-specific definitions stay in the `common:` namespace but carry
+`common:jurisdiction "<ISO 3166-1 alpha-2>"`. The tag works at two levels. On a property it means the whole property only applies in that
+country: currently `common:wealthTaxValue` (formuesverdi, a wealth-tax figure; the balance-sheet
+amount is the neutral `common:bookValue`). On an enumeration value it means only that value
+applies there: currently the saldogruppe instances.
+`RdfsTaxonomyLoader` surfaces the property-level annotation as `PropertyDefinition.jurisdiction()`
+(`null` when the property applies everywhere) so a consumer can hide the property for
+organisations outside that country, and the value-level one as `EnumValue.jurisdiction()`.
+
+Typical defaults per domain (set on the category in the consumer, not in the taxonomy):
+`logistics:RealEstate` → h (i for office buildings, j for fixed technical installations),
+`machine:Machine` → d, `ict:Hardware`/`ict:Software` → a, `furniture:Furniture` → d.
+
 ## Maven Dependency
 
 ```xml

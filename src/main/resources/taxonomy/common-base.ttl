@@ -3,6 +3,7 @@
 @prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 @prefix schema: <https://schema.org/> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
 
 # ===================================================================
 # Common Taxonomy
@@ -143,14 +144,173 @@ common:resourceVariant a rdf:Property ;
 # -------------------------------------------------------------------
 # Cross-cutting financial properties
 #
-# assetValue (formuesverdi) is a per-year valuation that applies to
-# durable assets across domains (machine:Machine, logistics:RealEstate,
-# ...). The property is defined here so any domain can reuse the same URI;
+# A durable asset carries up to three per-year values, each under its own
+# rules; all share the AssetValueEntry (year, value) shape:
+#
+#   bookValue      regnskapsmessig/bokført verdi — the balance-sheet carrying
+#                  amount (resultatregnskap, regnskapsloven; straight-line
+#                  depreciation over economic life). Jurisdiction-neutral.
+#   taxValue       skattemessig verdi / saldoverdi — the tax written-down
+#                  value (skatteregnskap, næringsoppgaven). For Norway this
+#                  is what the saldogruppe rate is applied to. The gap to
+#                  bookValue is the midlertidige forskjeller behind utsatt
+#                  skatt. Jurisdiction-neutral (every tax regime has one).
+#   wealthTaxValue formuesverdi — the owners' wealth-tax basis, with its
+#                  own valuation rules. Norwegian only.
+#
+# The properties are defined here so any domain can reuse the same URI;
 # each domain opts in by adding its own `schema:domainIncludes` triple in
 # its own ttl. Merged into a single Jena graph at load time.
 # -------------------------------------------------------------------
 
-common:assetValue a rdf:Property ;
-    rdfs:label "Asset Value"@en, "Formuesverdi"@no ;
-    rdfs:comment "Per-year asset valuation (formuesverdi): a list of (year, value) entries expressed in NOK"@en ;
+common:wealthTaxValue a rdf:Property ;
+    rdfs:label "Wealth Tax Value"@en, "Formuesverdi"@no ;
+    rdfs:comment "Per-year wealth-tax valuation (formuesverdi) for the Norwegian tax return: a list of (year, value) entries expressed in NOK. Not the balance-sheet carrying amount (bookValue) nor the tax written-down value (taxValue)"@en ;
+    common:jurisdiction "NO" ;
     rdfs:range common:AssetValueEntry .
+
+# -------------------------------------------------------------------
+# Cross-cutting accounting and tax properties
+#
+# ledgerAccount and bookValue are jurisdiction-neutral: every chart of
+# accounts has a balance-sheet account for a capitalised asset, and every
+# accounting regime carries that asset at a (depreciated) book value.
+#
+# depreciationGroup is a global property: every tax regime classifies a
+# fixed asset into some statutory depreciation class, but the classes and
+# their rates are national. The property and its enumeration class are
+# therefore jurisdiction-neutral, while each enumeration value is tagged
+# with `common:jurisdiction` (ISO 3166-1 alpha-2). Today the value list is
+# the Norwegian saldogrupper (skatteloven § 14-41, tag "NO"); another
+# country adds its own instances of common:DepreciationGroup with its own
+# tag, e.g. UK capital-allowance pools as "GB". The loader surfaces the
+# instances as PropertyDefinition.enumValues() with their jurisdiction so
+# a consumer shows only the values matching the organisation's country.
+#
+# `common:jurisdiction` on a *property* (e.g. wealthTaxValue) means the whole
+# property only applies in that country; the loader surfaces that as
+# PropertyDefinition.jurisdiction().
+#
+# Domains opt in with schema:domainIncludes in their own ttl, exactly as
+# for wealthTaxValue. Typical groups: logistics:RealEstate → h (i for
+# commercial buildings, j for fixed technical installations; land is not
+# depreciable), machine:Machine → d (j when it is a fixed technical
+# installation in a building), ict:Hardware → a, furniture:Furniture → d.
+# The group actually used is set per category or per asset by the
+# consumer; the taxonomy only defines the vocabulary.
+# -------------------------------------------------------------------
+
+common:jurisdiction a rdf:Property ;
+    rdfs:label "Jurisdiction"@en, "Jurisdiksjon"@no ;
+    rdfs:comment "Annotation on a property, class or enumeration value that only applies under one country's law or accounting rules: ISO 3166-1 alpha-2 code (e.g. \"NO\"). Absent ⇒ applies everywhere"@en ;
+    rdfs:range xsd:string .
+
+common:ledgerAccount a rdf:Property ;
+    rdfs:label "Ledger Account"@en, "Regnskapskonto"@no ;
+    rdfs:comment "The general-ledger account number the asset is capitalised on, in the organisation's chart of accounts. In the Norwegian standard chart (NS 4102) this is a balance-sheet account in the 1000–1399 range: 10xx intangibles, 11xx land and buildings, 12xx machinery, vehicles, fixtures and equipment"@en ;
+    rdfs:range xsd:string .
+
+common:bookValue a rdf:Property ;
+    rdfs:label "Book Value"@en, "Bokført verdi"@no ;
+    rdfs:comment "Per-year carrying value of the asset in the financial accounts (regnskapsmessig verdi): a list of (year, value) entries in NOK. The entry for the acquisition year holds the cost (anskaffelseskost); each later entry holds the value at year end after that year's accounting depreciation. Distinct from taxValue (skattemessig verdi) and wealthTaxValue (formuesverdi)"@en ;
+    rdfs:range common:AssetValueEntry .
+
+common:taxValue a rdf:Property ;
+    rdfs:label "Tax Value"@en, "Skattemessig verdi"@no ;
+    rdfs:comment "Per-year tax written-down value of the asset in the tax accounts (skattemessig nedskrevet verdi, saldoverdi): a list of (year, value) entries in NOK. The entry for the acquisition year holds the cost; each later entry holds the value at year end after that year's tax depreciation, for Norway the declining-balance rate of the asset's depreciationGroup. The difference to bookValue is the temporary difference (midlertidig forskjell) behind deferred tax"@en ;
+    rdfs:range common:AssetValueEntry .
+
+common:depreciationGroup a rdf:Property ;
+    rdfs:label "Tax Depreciation Group"@en, "Saldogruppe"@no ;
+    rdfs:comment "The statutory tax depreciation class of the asset. The value list is per jurisdiction (each common:DepreciationGroup instance carries common:jurisdiction); for Norway it is the saldogruppe per skatteloven § 14-41, whose rate (§ 14-43) is applied yearly to the asset's taxValue (skattemessig saldo), independently of the accounting depreciation of bookValue"@en ;
+    rdfs:seeAlso <https://lovdata.no/lov/1999-03-26-14/§14-41> ;
+    rdfs:range common:DepreciationGroup .
+
+# -------------------------------------------------------------------
+# Depreciation group enumeration (as individual instances, like
+# logistics:LocationType). Each instance is tagged with its jurisdiction.
+# Norwegian rates are the maximum yearly declining-balance rates in
+# skatteloven § 14-43 as of 2026; the statute is the source of truth and
+# the rates here are documentation for consumers. A straight-line regime
+# (e.g. German AfA tables) would carry a useful life instead of a rate.
+# -------------------------------------------------------------------
+
+common:DepreciationGroup a rdfs:Class ;
+    rdfs:label "Tax Depreciation Group"@en, "Saldogruppe"@no ;
+    rdfs:comment "Enumeration of statutory tax depreciation classes, one set per jurisdiction (common:jurisdiction on each instance). Norwegian instances (saldogruppe a–j, skatteloven § 14-41) carry the maximum yearly rate per § 14-43 as common:depreciationRate (percent) and the statutory letter as skos:notation"@en ;
+    rdfs:seeAlso <https://lovdata.no/lov/1999-03-26-14/§14-43> .
+
+common:depreciationRate a rdf:Property ;
+    rdfs:label "Depreciation Rate (%)"@en, "Avskrivningssats (%)"@no ;
+    rdfs:comment "Maximum yearly declining-balance depreciation rate in percent for a depreciation group"@en ;
+    rdfs:range xsd:decimal .
+
+common:DepreciationGroupA a common:DepreciationGroup ;
+    skos:notation "a" ;
+    rdfs:label "Group a: Office machines etc."@en, "Saldogruppe a: Kontormaskiner o.l."@no ;
+    rdfs:comment "Kontormaskiner o.l. — office machines, computers and similar equipment"@en ;
+    common:depreciationRate 30 ;
+    common:jurisdiction "NO" .
+
+common:DepreciationGroupB a common:DepreciationGroup ;
+    skos:notation "b" ;
+    rdfs:label "Group b: Acquired goodwill"@en, "Saldogruppe b: Ervervet forretningsverdi"@no ;
+    rdfs:comment "Ervervet forretningsverdi — goodwill acquired with a business"@en ;
+    common:depreciationRate 20 ;
+    common:jurisdiction "NO" .
+
+common:DepreciationGroupC a common:DepreciationGroup ;
+    skos:notation "c" ;
+    rdfs:label "Group c: Trucks, buses, vans and taxis"@en, "Saldogruppe c: Vogntog, lastebiler, busser, varebiler, drosjebiler mv."@no ;
+    rdfs:comment "Vogntog, lastebiler, busser, varebiler, drosjebiler og kjøretøy for transport av funksjonshemmede. § 14-43 has at times allowed a higher rate for zero-emission vans"@en ;
+    common:depreciationRate 24 ;
+    common:jurisdiction "NO" .
+
+common:DepreciationGroupD a common:DepreciationGroup ;
+    skos:notation "d" ;
+    rdfs:label "Group d: Passenger cars, machinery, fixtures and equipment"@en, "Saldogruppe d: Personbiler, maskiner, inventar mv."@no ;
+    rdfs:comment "Personbiler, traktorer, maskiner, redskap, instrumenter, inventar mv. — the default group for machines and furniture"@en ;
+    common:depreciationRate 20 ;
+    common:jurisdiction "NO" .
+
+common:DepreciationGroupE a common:DepreciationGroup ;
+    skos:notation "e" ;
+    rdfs:label "Group e: Ships, vessels and rigs"@en, "Saldogruppe e: Skip, fartøyer, rigger mv."@no ;
+    rdfs:comment "Skip, fartøyer, rigger mv."@en ;
+    common:depreciationRate 14 ;
+    common:jurisdiction "NO" .
+
+common:DepreciationGroupF a common:DepreciationGroup ;
+    skos:notation "f" ;
+    rdfs:label "Group f: Aircraft and helicopters"@en, "Saldogruppe f: Fly, helikopter"@no ;
+    rdfs:comment "Fly, helikopter"@en ;
+    common:depreciationRate 12 ;
+    common:jurisdiction "NO" .
+
+common:DepreciationGroupG a common:DepreciationGroup ;
+    skos:notation "g" ;
+    rdfs:label "Group g: Electrical power transmission and distribution installations"@en, "Saldogruppe g: Anlegg for overføring og distribusjon av elektrisk kraft"@no ;
+    rdfs:comment "Anlegg for overføring og distribusjon av elektrisk kraft og elektroteknisk utrustning i kraftforetak, og slike driftsmidler benyttet i annen virksomhet"@en ;
+    common:depreciationRate 5 ;
+    common:jurisdiction "NO" .
+
+common:DepreciationGroupH a common:DepreciationGroup ;
+    skos:notation "h" ;
+    rdfs:label "Group h: Buildings and installations, hotels, lodging houses and restaurants"@en, "Saldogruppe h: Bygg og anlegg, hoteller, losjihus, bevertningssteder mv."@no ;
+    rdfs:comment "Bygg og anlegg, hoteller, losjihus, bevertningssteder mv. — the default group for real estate. § 14-43 allows 10 % for buildings and installations with an expected useful life under 20 years and 6 % for livestock buildings in agriculture. Land (tomt) is not depreciable"@en ;
+    common:depreciationRate 4 ;
+    common:jurisdiction "NO" .
+
+common:DepreciationGroupI a common:DepreciationGroup ;
+    skos:notation "i" ;
+    rdfs:label "Group i: Commercial buildings"@en, "Saldogruppe i: Forretningsbygg"@no ;
+    rdfs:comment "Forretningsbygg — office and retail buildings"@en ;
+    common:depreciationRate 2 ;
+    common:jurisdiction "NO" .
+
+common:DepreciationGroupJ a common:DepreciationGroup ;
+    skos:notation "j" ;
+    rdfs:label "Group j: Fixed technical installations in buildings"@en, "Saldogruppe j: Fast teknisk installasjon i bygninger"@no ;
+    rdfs:comment "Fast teknisk installasjon i bygninger — ventilation, heating, electrical, lifts and similar, depreciated separately from the building in group h or i"@en ;
+    common:depreciationRate 10 ;
+    common:jurisdiction "NO" .

@@ -2,6 +2,7 @@ package no.sirktek.taxonomy.loader;
 
 import lombok.extern.slf4j.Slf4j;
 import no.sirktek.taxonomy.model.CategoryInfo;
+import no.sirktek.taxonomy.model.EnumValue;
 import no.sirktek.taxonomy.model.PropertyDefinition;
 import no.sirktek.taxonomy.model.TaxonomyTree;
 import org.apache.jena.rdf.model.*;
@@ -40,6 +41,20 @@ public abstract class RdfsTaxonomyLoader {
      */
     private static final Property COMMON_MULTI_VALUED =
             ResourceFactory.createProperty("http://taxonomy.sirktek.no/common#multiValued");
+
+    /**
+     * common:jurisdiction — ISO 3166-1 alpha-2 annotation marking a property or an
+     * enumeration value as applicable only under one country's law or accounting
+     * rules (e.g. "NO"). Absent ⇒ applies everywhere.
+     */
+    private static final Property COMMON_JURISDICTION =
+            ResourceFactory.createProperty("http://taxonomy.sirktek.no/common#jurisdiction");
+
+    /**
+     * skos:notation — short code of an enumeration value (e.g. the saldogruppe letter).
+     */
+    private static final Property SKOS_NOTATION =
+            ResourceFactory.createProperty("http://www.w3.org/2004/02/skos/core#notation");
 
     /**
      * Default constructor
@@ -350,6 +365,14 @@ public abstract class RdfsTaxonomyLoader {
             multiValued = multiValuedStmt.getBoolean();
         }
 
+        // Jurisdiction marker: common:jurisdiction "NO" ⇒ Norway-only property.
+        String jurisdiction = getJurisdiction(propertyResource);
+
+        // Enumeration values: individuals typed by the range class, if any.
+        List<EnumValue> enumValues = rangeStmt != null
+                ? getEnumValues(rangeStmt.getResource())
+                : List.of();
+
         return PropertyDefinition.builder()
                 .name(name)
                 .englishLabel(englishLabel)
@@ -359,12 +382,83 @@ public abstract class RdfsTaxonomyLoader {
                 .domainClass(domainClass)
                 .description(null) // Could add comments if needed
                 .multiValued(multiValued)
+                .jurisdiction(jurisdiction)
+                .enumValues(enumValues)
                 .build();
     }
 
     /**
      * Extract the local name from a URI
      */
+    private String getJurisdiction(Resource resource) {
+        Statement stmt = resource.getProperty(COMMON_JURISDICTION);
+        return stmt != null ? stmt.getString() : null;
+    }
+
+    /**
+     * Collect the individuals whose rdf:type is the given range class, in the model
+     * the property was read from. Sorted by skos:notation, then local name, so the
+     * order is stable for UI pickers. Empty when the range is a datatype, a marker
+     * class without instances, or a class outside the loaded model.
+     */
+    private List<EnumValue> getEnumValues(Resource rangeClass) {
+        Model model = rangeClass.getModel();
+        if (model == null || rangeClass.getURI() == null) {
+            return List.of();
+        }
+        List<EnumValue> values = new ArrayList<>();
+        ResIterator it = model.listSubjectsWithProperty(RDF.type, rangeClass);
+        while (it.hasNext()) {
+            Resource individual = it.nextResource();
+            if (individual.getURI() == null) {
+                continue;
+            }
+            Statement notation = individual.getProperty(SKOS_NOTATION);
+            String description = getLabelOrAny(individual, RDFS.comment);
+
+            Map<String, String> attributes = new TreeMap<>();
+            StmtIterator stmts = individual.listProperties();
+            while (stmts.hasNext()) {
+                Statement s = stmts.nextStatement();
+                Property p = s.getPredicate();
+                if (!s.getObject().isLiteral()
+                        || p.equals(RDF.type) || p.equals(RDFS.label) || p.equals(RDFS.comment)
+                        || p.equals(SKOS_NOTATION) || p.equals(COMMON_JURISDICTION)) {
+                    continue;
+                }
+                attributes.put(getLocalName(p.getURI()), s.getLiteral().getLexicalForm());
+            }
+
+            values.add(EnumValue.builder()
+                    .uri(individual.getURI())
+                    .name(getLocalName(individual.getURI()))
+                    .notation(notation != null ? notation.getString() : null)
+                    .englishLabel(getLabel(individual, "en"))
+                    .norwegianLabel(getLabel(individual, "no"))
+                    .description(description)
+                    .jurisdiction(getJurisdiction(individual))
+                    .attributes(attributes)
+                    .build());
+        }
+        values.sort(Comparator
+                .comparing((EnumValue v) -> v.notation() == null ? "" : v.notation())
+                .thenComparing(EnumValue::name));
+        return values;
+    }
+
+    /** rdfs:comment in English if present, else any language, else null. */
+    private String getLabelOrAny(Resource resource, Property predicate) {
+        String any = null;
+        StmtIterator it = resource.listProperties(predicate);
+        while (it.hasNext()) {
+            Statement s = it.nextStatement();
+            if (!s.getObject().isLiteral()) continue;
+            if ("en".equals(s.getLanguage())) return s.getString();
+            if (any == null) any = s.getString();
+        }
+        return any;
+    }
+
     private String getLocalName(String uri) {
         if (uri == null) return null;
         int hashIndex = uri.lastIndexOf('#');
