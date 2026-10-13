@@ -25,20 +25,20 @@ new `src/test/java/no/sirktek/taxonomy/loader/DomainOptInLoaderTest.java`,
 `src/test/java/no/sirktek/taxonomy/CommonTaxonomyServiceTest.java` (only if a count changes).
 Tests: `mvnq test -Dtest='DomainOptInLoaderTest,CommonTaxonomyServiceTest'`
 
-- [ ] 1.1 Test first: fixture TTL (`testdomain:TestBuilding`, own `testdomain:floors`, opt-in
+- [x] 1.1 Test first: fixture TTL (`testdomain:TestBuilding`, own `testdomain:floors`, opt-in
       `common:depreciationGroup`; `common:ledgerAccount` deliberately not opted in), `TestDomainLoader`,
       and `DomainOptInLoaderTest` covering the spec scenarios "Opted-in commons property
       attaches" (use `depreciationGroup` until Group 2 adds `marketValue`), "not opted in stays
       absent", "Commons classes do not leak", "Commons enumeration values reach a domain class",
       and `privateSet` `accounting` / `null`. See them fail.
-- [ ] 1.2 `loadTaxonomyFromResource`: read `/taxonomy/common-base.ttl` via
+- [x] 1.2 `loadTaxonomyFromResource`: read `/taxonomy/common-base.ttl` via
       `RdfsTaxonomyLoader.class.getResourceAsStream` into the model, then the requested resource.
-- [ ] 1.3 `getPropertiesForClass`: drop the `startsWith(namespace)` test; leave the
+- [x] 1.3 `getPropertiesForClass`: drop the `startsWith(namespace)` test; leave the
       `namespace` parameter only if still used, otherwise remove it.
-- [ ] 1.4 `common:privateSet` declaration in `common-base.ttl` (D2 text); `"accounting"` on
+- [x] 1.4 `common:privateSet` declaration in `common-base.ttl` (D2 text); `"accounting"` on
       `ledgerAccount` and `depreciationGroup`; `COMMON_PRIVATE_SET` in the loader;
       `PropertyDefinition.privateSet` after `jurisdiction` with a javadoc `@param`.
-- [ ] 1.5 Run the group's tests; then `mvnq test` once.
+- [x] 1.5 Run the group's tests; then `mvnq test` once.
 
 ### Group 2: Accounting in ledger17 shape; commercial terms
 

@@ -205,9 +205,15 @@ common:jurisdiction a rdf:Property ;
     rdfs:comment "Annotation on a property, class or enumeration value that only applies under one country's law or accounting rules: ISO 3166-1 alpha-2 code (e.g. \"NO\"). Absent ⇒ applies everywhere"@en ;
     rdfs:range xsd:string .
 
+common:privateSet a rdf:Property ;
+    rdfs:label "Private set"@en, "Privat sett"@no ;
+    rdfs:comment "Annotation on a property: the key of the private property set its values belong to (e.g. \"accounting\", \"commercial\"). Values in a private set are visible only to the owning organisation. Absent ⇒ public property"@en ;
+    rdfs:range xsd:string .
+
 common:ledgerAccount a rdf:Property ;
     rdfs:label "Ledger Account"@en, "Regnskapskonto"@no ;
     rdfs:comment "The general-ledger account number the asset is capitalised on, in the organisation's chart of accounts. In the Norwegian standard chart (NS 4102) this is a balance-sheet account in the 1000–1399 range: 10xx intangibles, 11xx land and buildings, 12xx machinery, vehicles, fixtures and equipment"@en ;
+    common:privateSet "accounting" ;
     rdfs:range xsd:string .
 
 common:bookValue a rdf:Property ;
@@ -224,6 +230,7 @@ common:depreciationGroup a rdf:Property ;
     rdfs:label "Tax Depreciation Group"@en, "Saldogruppe"@no ;
     rdfs:comment "The statutory tax depreciation class of the asset. The value list is per jurisdiction (each common:DepreciationGroup instance carries common:jurisdiction); for Norway it is the saldogruppe per skatteloven § 14-41, whose rate (§ 14-43) is applied yearly to the asset's taxValue (skattemessig saldo), independently of the accounting depreciation of bookValue"@en ;
     rdfs:seeAlso <https://lovdata.no/lov/1999-03-26-14/§14-41> ;
+    common:privateSet "accounting" ;
     rdfs:range common:DepreciationGroup .
 
 # -------------------------------------------------------------------

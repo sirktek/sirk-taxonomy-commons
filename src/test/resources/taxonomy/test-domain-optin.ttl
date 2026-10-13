@@ -1,0 +1,18 @@
+# Test fixture: a domain class that opts into shared commons properties.
+@prefix testdomain: <http://taxonomy.sirktek.no/testdomain#> .
+@prefix common:     <http://taxonomy.sirktek.no/common#> .
+@prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:        <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema:     <https://schema.org/> .
+
+testdomain:TestBuilding a rdfs:Class ;
+    rdfs:label "Test Building"@en .
+
+testdomain:floors a rdf:Property ;
+    rdfs:label "Floors"@en ;
+    rdfs:domain testdomain:TestBuilding ;
+    rdfs:range xsd:integer .
+
+# Opt-ins (common:ledgerAccount is deliberately not opted in)
+common:depreciationGroup schema:domainIncludes testdomain:TestBuilding .

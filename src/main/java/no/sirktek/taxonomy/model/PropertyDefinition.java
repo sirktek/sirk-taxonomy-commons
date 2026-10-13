@@ -22,6 +22,10 @@ import java.util.List;
  *                       Norwegian depreciationGroup). Set from the
  *                       {@code common:jurisdiction} annotation; {@code null} means the
  *                       property applies everywhere.
+ * @param privateSet     key of the private property set the property's values belong to
+ *                       (e.g. "accounting"), visible only to the owning organisation. Set from
+ *                       the {@code common:privateSet} annotation; {@code null} means a public
+ *                       property.
  * @param enumValues     the values of an enumeration-typed property: the individuals whose
  *                       {@code rdf:type} is the range class, in the loaded model. Empty for
  *                       literal, marker-class and non-enumeration ranges. Each value carries
@@ -38,6 +42,7 @@ public record PropertyDefinition(
         String description,
         boolean multiValued,
         String jurisdiction,
+        String privateSet,
         List<EnumValue> enumValues) {
 
     public PropertyDefinition {
