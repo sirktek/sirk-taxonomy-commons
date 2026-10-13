@@ -1,0 +1,14 @@
+schema: spec-driven
+
+context: |
+  sirk-taxonomy-commons: shared Java 17 library (Apache Jena, Lombok, JUnit 5) for Sirktek's RDF-S
+  taxonomies. Holds the model records (CategoryInfo, PropertyDefinition, EnumValue), the abstract
+  RdfsTaxonomyLoader that the domain taxonomies (sirk-logistics-, sirk-machine-, sirk-furniture-,
+  sirk-ict-taxonomy) extend, and common-base.ttl with cross-cutting vocabulary (namespace
+  http://taxonomy.sirktek.no/common#). Released as 3.<build> on merge to main. Consumers: the four
+  domain taxonomies and sirk-orgadmin-backend. Maven goes through `mvnq` (same arguments as
+  ./mvnw). Taxonomies are data: no Java code specific to a class or property.
+
+rules:
+  tasks:
+    - "Group tasks as ### Group N: <name>, each listing the files it may touch and its test command."
