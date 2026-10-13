@@ -14,11 +14,9 @@ class CommonPropertyDefinitionTest {
     }
 
     @Test
-    void mapsAssetValueEntryToAssetValueForAllThreePerYearValues() {
-        String range = "http://taxonomy.sirktek.no/common#AssetValueEntry";
-        assertEquals(PropertyType.ASSET_VALUE, getPropertyType(withRange("bookValue", range)));
-        assertEquals(PropertyType.ASSET_VALUE, getPropertyType(withRange("taxValue", range)));
-        assertEquals(PropertyType.ASSET_VALUE, getPropertyType(withRange("wealthTaxValue", range)));
+    void mapsAssetValuationEntryToAssetValuations() {
+        assertEquals(PropertyType.ASSET_VALUATIONS,
+                getPropertyType(withRange("valuations", "http://taxonomy.sirktek.no/common#AssetValuationEntry")));
     }
 
     @Test

@@ -1,0 +1,42 @@
+# Publishes an existing release tag to Maven Central. Run by hand (Actions → Run workflow) only
+# when a Central consumer needs that version: Central has a monthly publishing limit, and every
+# merge to main already releases to GitHub Packages (build_tag_and_release.yml).
+
+name: Publish release to Maven Central
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish, e.g. 3.14'
+        required: true
+
+jobs:
+  publish:
+
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.tag }}
+    - name: Configure Maven settings for Maven Central
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'zulu'
+        cache: maven
+        server-id: central
+        server-username: MAVEN_USERNAME # env variable for username in deploy
+        server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
+        gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Value of the GPG private key to import
+        gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
+    - name: Set Release Version
+      run: ./mvnw versions:set -DnewVersion=${{ inputs.tag }} --batch-mode --no-transfer-progress
+    - name: Publish to Maven Central
+      run: ./mvnw clean deploy -P deployment -Dmaven.test.skip --batch-mode --no-transfer-progress
+      env:
+        MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+        MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}

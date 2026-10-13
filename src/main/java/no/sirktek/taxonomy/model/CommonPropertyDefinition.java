@@ -6,7 +6,7 @@ package no.sirktek.taxonomy.model;
  *
  * Only the cross-cutting property ranges are mapped here — the *Entry
  * markers (EmissionEntry, ConsistsOfEntry, EnergySourceEntry,
- * AllocationEntry, AssetValueEntry) and the DepreciationGroup
+ * AllocationEntry, AssetValuationEntry) and the DepreciationGroup
  * enumeration. Domain taxonomies
  * (FurniturePropertyDefinition, LogisticsPropertyDefinition,
  * MachinePropertyDefinition) handle their own xsd-* and domain-specific
@@ -30,7 +30,7 @@ public class CommonPropertyDefinition {
             case "http://taxonomy.sirktek.no/common#ConsistsOfEntry"    -> PropertyType.CONSISTS_OF;
             case "http://taxonomy.sirktek.no/common#EnergySourceEntry"  -> PropertyType.ENERGY_MIX;
             case "http://taxonomy.sirktek.no/common#AllocationEntry"    -> PropertyType.ALLOCATIONS;
-            case "http://taxonomy.sirktek.no/common#AssetValueEntry"    -> PropertyType.ASSET_VALUE;
+            case "http://taxonomy.sirktek.no/common#AssetValuationEntry" -> PropertyType.ASSET_VALUATIONS;
             case "http://taxonomy.sirktek.no/common#DepreciationGroup"  -> PropertyType.DEPRECIATION_GROUP;
             default -> null;
         };
@@ -51,11 +51,10 @@ public class CommonPropertyDefinition {
         /** A list of allocation buckets partitioning yearly emissions across capacity dimensions. */
         ALLOCATIONS,
         /**
-         * A list of per-year asset valuation entries ({@code AssetValueEntry}):
-         * bookValue (bokført verdi), taxValue (skattemessig verdi) and
-         * wealthTaxValue (formuesverdi) share this type.
+         * A list of yearly valuation entries ({@code AssetValuationEntry}):
+         * {@code {year, bookValue, taxValue, wealthValue}} per fiscal year.
          */
-        ASSET_VALUE,
+        ASSET_VALUATIONS,
         /**
          * A statutory tax depreciation class, the {@code common:DepreciationGroup}
          * enumeration. The value list is per jurisdiction: read it from

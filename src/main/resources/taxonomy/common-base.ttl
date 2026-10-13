@@ -56,9 +56,9 @@ common:AllocationEntry a rdfs:Class ;
     rdfs:label "Allocation Entry"@en ;
     rdfs:comment "One allocation bucket on a location: a named capacity dimension (e.g. storage volume, workstation count) with the share of the location's yearly emissions that should be attributed to it"@en .
 
-common:AssetValueEntry a rdfs:Class ;
-    rdfs:label "Asset Value Entry"@en ;
-    rdfs:comment "A per-year asset valuation entry (year, value) — e.g. the Norwegian formuesverdi (wealth-tax value) of a machine or real-estate asset, expressed in NOK"@en .
+common:AssetValuationEntry a rdfs:Class ;
+    rdfs:label "Asset Valuation Entry"@en ;
+    rdfs:comment "The values of one asset at the end of one fiscal year: year (integer, the year the fiscal year ends), bookValue (carrying amount after accounting depreciation), taxValue (tax written-down value, saldoverdi), wealthValue (formuesverdi, Norway only). Amounts are decimals in NOK; every field but year is optional. Same names and shape as ledger17's acct:AssetValuation"@en .
 
 # -------------------------------------------------------------------
 # Manufacturer properties
@@ -144,37 +144,28 @@ common:resourceVariant a rdf:Property ;
 # -------------------------------------------------------------------
 # Cross-cutting financial properties
 #
-# A durable asset carries up to three per-year values, each under its own
-# rules; all share the AssetValueEntry (year, value) shape:
+# A durable asset carries one valuation entry per fiscal year
+# (AssetValuationEntry: year, bookValue, taxValue, wealthValue), held in
+# the single property common:valuations. The names and shape follow
+# ledger17's acct:valuations / acct:AssetValuation. Only the wealthValue
+# field (formuesverdi) is Norwegian; the property itself is neutral.
 #
-#   bookValue      regnskapsmessig/bokført verdi — the balance-sheet carrying
-#                  amount (resultatregnskap, regnskapsloven; straight-line
-#                  depreciation over economic life). Jurisdiction-neutral.
-#   taxValue       skattemessig verdi / saldoverdi — the tax written-down
-#                  value (skatteregnskap, næringsoppgaven). For Norway this
-#                  is what the saldogruppe rate is applied to. The gap to
-#                  bookValue is the midlertidige forskjeller behind utsatt
-#                  skatt. Jurisdiction-neutral (every tax regime has one).
-#   wealthTaxValue formuesverdi — the owners' wealth-tax basis, with its
-#                  own valuation rules. Norwegian only.
-#
-# The properties are defined here so any domain can reuse the same URI;
-# each domain opts in by adding its own `schema:domainIncludes` triple in
-# its own ttl. Merged into a single Jena graph at load time.
+# The property is defined here so any domain can reuse the same URI; each
+# domain opts in by adding its own `schema:domainIncludes` triple in its
+# own ttl. Merged into a single Jena graph at load time.
 # -------------------------------------------------------------------
 
-common:wealthTaxValue a rdf:Property ;
-    rdfs:label "Wealth Tax Value"@en, "Formuesverdi"@no ;
-    rdfs:comment "Per-year wealth-tax valuation (formuesverdi) for the Norwegian tax return: a list of (year, value) entries expressed in NOK. Not the balance-sheet carrying amount (bookValue) nor the tax written-down value (taxValue)"@en ;
-    common:jurisdiction "NO" ;
-    rdfs:range common:AssetValueEntry .
+common:valuations a rdf:Property ;
+    rdfs:label "Valuations"@en, "Verdsettelser"@no ;
+    rdfs:comment "The yearly valuations of the asset, one entry per fiscal year (see AssetValuationEntry)"@en ;
+    common:privateSet "accounting" ;
+    rdfs:range common:AssetValuationEntry .
 
 # -------------------------------------------------------------------
 # Cross-cutting accounting and tax properties
 #
-# ledgerAccount and bookValue are jurisdiction-neutral: every chart of
-# accounts has a balance-sheet account for a capitalised asset, and every
-# accounting regime carries that asset at a (depreciated) book value.
+# ledgerAccount is jurisdiction-neutral: every chart of accounts has a
+# balance-sheet account for a capitalised asset.
 #
 # depreciationGroup is a global property: every tax regime classifies a
 # fixed asset into some statutory depreciation class, but the classes and
@@ -187,12 +178,11 @@ common:wealthTaxValue a rdf:Property ;
 # instances as PropertyDefinition.enumValues() with their jurisdiction so
 # a consumer shows only the values matching the organisation's country.
 #
-# `common:jurisdiction` on a *property* (e.g. wealthTaxValue) means the whole
-# property only applies in that country; the loader surfaces that as
+# `common:jurisdiction` on a *property* means the whole property only
+# applies in that country; the loader surfaces that as
 # PropertyDefinition.jurisdiction().
 #
-# Domains opt in with schema:domainIncludes in their own ttl, exactly as
-# for wealthTaxValue. Typical groups: logistics:RealEstate → h (i for
+# Domains opt in with schema:domainIncludes in their own ttl. Typical groups: logistics:RealEstate → h (i for
 # commercial buildings, j for fixed technical installations; land is not
 # depreciable), machine:Machine → d (j when it is a fixed technical
 # installation in a building), ict:Hardware → a, furniture:Furniture → d.
@@ -205,25 +195,22 @@ common:jurisdiction a rdf:Property ;
     rdfs:comment "Annotation on a property, class or enumeration value that only applies under one country's law or accounting rules: ISO 3166-1 alpha-2 code (e.g. \"NO\"). Absent ⇒ applies everywhere"@en ;
     rdfs:range xsd:string .
 
+common:privateSet a rdf:Property ;
+    rdfs:label "Private set"@en, "Privat sett"@no ;
+    rdfs:comment "Annotation on a property: the key of the private property set its values belong to (e.g. \"accounting\", \"commercial\"). Values in a private set are visible only to the owning organisation. Absent ⇒ public property"@en ;
+    rdfs:range xsd:string .
+
 common:ledgerAccount a rdf:Property ;
     rdfs:label "Ledger Account"@en, "Regnskapskonto"@no ;
     rdfs:comment "The general-ledger account number the asset is capitalised on, in the organisation's chart of accounts. In the Norwegian standard chart (NS 4102) this is a balance-sheet account in the 1000–1399 range: 10xx intangibles, 11xx land and buildings, 12xx machinery, vehicles, fixtures and equipment"@en ;
+    common:privateSet "accounting" ;
     rdfs:range xsd:string .
-
-common:bookValue a rdf:Property ;
-    rdfs:label "Book Value"@en, "Bokført verdi"@no ;
-    rdfs:comment "Per-year carrying value of the asset in the financial accounts (regnskapsmessig verdi): a list of (year, value) entries in NOK. The entry for the acquisition year holds the cost (anskaffelseskost); each later entry holds the value at year end after that year's accounting depreciation. Distinct from taxValue (skattemessig verdi) and wealthTaxValue (formuesverdi)"@en ;
-    rdfs:range common:AssetValueEntry .
-
-common:taxValue a rdf:Property ;
-    rdfs:label "Tax Value"@en, "Skattemessig verdi"@no ;
-    rdfs:comment "Per-year tax written-down value of the asset in the tax accounts (skattemessig nedskrevet verdi, saldoverdi): a list of (year, value) entries in NOK. The entry for the acquisition year holds the cost; each later entry holds the value at year end after that year's tax depreciation, for Norway the declining-balance rate of the asset's depreciationGroup. The difference to bookValue is the temporary difference (midlertidig forskjell) behind deferred tax"@en ;
-    rdfs:range common:AssetValueEntry .
 
 common:depreciationGroup a rdf:Property ;
     rdfs:label "Tax Depreciation Group"@en, "Saldogruppe"@no ;
-    rdfs:comment "The statutory tax depreciation class of the asset. The value list is per jurisdiction (each common:DepreciationGroup instance carries common:jurisdiction); for Norway it is the saldogruppe per skatteloven § 14-41, whose rate (§ 14-43) is applied yearly to the asset's taxValue (skattemessig saldo), independently of the accounting depreciation of bookValue"@en ;
+    rdfs:comment "The statutory tax depreciation class of the asset. The value list is per jurisdiction (each common:DepreciationGroup instance carries common:jurisdiction); for Norway it is the saldogruppe per skatteloven § 14-41, whose rate (§ 14-43) is applied yearly to the asset's tax value (skattemessig saldo, the taxValue of its valuations), independently of the accounting depreciation of bookValue"@en ;
     rdfs:seeAlso <https://lovdata.no/lov/1999-03-26-14/§14-41> ;
+    common:privateSet "accounting" ;
     rdfs:range common:DepreciationGroup .
 
 # -------------------------------------------------------------------
@@ -314,3 +301,35 @@ common:DepreciationGroupJ a common:DepreciationGroup ;
     rdfs:comment "Fast teknisk installasjon i bygninger — ventilation, heating, electrical, lifts and similar, depreciated separately from the building in group h or i"@en ;
     common:depreciationRate 10 ;
     common:jurisdiction "NO" .
+
+# -------------------------------------------------------------------
+# Commercial terms
+#
+# Private (privateSet "commercial"), jurisdiction-neutral terms of an
+# asset. No domain: domains opt in with schema:domainIncludes in their
+# own ttl. Amounts exclude VAT where stated.
+# -------------------------------------------------------------------
+
+common:marketValue a rdf:Property ;
+    rdfs:label "Market value"@en, "Markedsverdi"@no ;
+    rdfs:comment "Estimated market value of the asset in NOK"@en ;
+    common:privateSet "commercial" ;
+    rdfs:range xsd:decimal .
+
+common:marketValueDate a rdf:Property ;
+    rdfs:label "Valuation date"@en, "Verdsettelsesdato"@no ;
+    rdfs:comment "The date the market value applies to"@en ;
+    common:privateSet "commercial" ;
+    rdfs:range xsd:date .
+
+common:monthlyRent a rdf:Property ;
+    rdfs:label "Monthly rent (excl. VAT)"@en, "Månedsleie (eks. mva)"@no ;
+    rdfs:comment "Monthly rent for the asset in NOK, excluding VAT"@en ;
+    common:privateSet "commercial" ;
+    rdfs:range xsd:decimal .
+
+common:monthlyServiceCharge a rdf:Property ;
+    rdfs:label "Monthly service charge (excl. VAT)"@en, "Felleskostnader per måned (eks. mva)"@no ;
+    rdfs:comment "Monthly service charge (common costs) for the asset in NOK, excluding VAT"@en ;
+    common:privateSet "commercial" ;
+    rdfs:range xsd:decimal .

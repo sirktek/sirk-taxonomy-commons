@@ -51,6 +51,15 @@ public abstract class RdfsTaxonomyLoader {
             ResourceFactory.createProperty("http://taxonomy.sirktek.no/common#jurisdiction");
 
     /**
+     * common:privateSet — key of the private property set the property's values belong
+     * to (e.g. "accounting"). Absent ⇒ public property.
+     */
+    private static final Property COMMON_PRIVATE_SET =
+            ResourceFactory.createProperty("http://taxonomy.sirktek.no/common#privateSet");
+
+    private static final String COMMONS_RESOURCE = "/taxonomy/common-base.ttl";
+
+    /**
      * skos:notation — short code of an enumeration value (e.g. the saldogruppe letter).
      */
     private static final Property SKOS_NOTATION =
@@ -91,17 +100,25 @@ public abstract class RdfsTaxonomyLoader {
     public TaxonomyTree loadTaxonomyFromResource(String resourcePath) {
         log.debug("Loading taxonomy from resource: {}", resourcePath);
 
-        try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
+        try (InputStream inputStream = getClass().getResourceAsStream(resourcePath);
+             InputStream commonsStream = RdfsTaxonomyLoader.class.getResourceAsStream(COMMONS_RESOURCE)) {
             if (inputStream == null) {
                 throw new TaxonomyLoadException("Could not find resource: " + resourcePath);
             }
+            if (commonsStream == null) {
+                throw new TaxonomyLoadException("Could not find resource: " + COMMONS_RESOURCE);
+            }
 
-            // Create Jena model and read Turtle data
+            // Commons first, so properties opted into via schema:domainIncludes and
+            // enumeration individuals are in the same graph as the domain's classes.
             Model model = ModelFactory.createDefaultModel();
+            model.read(commonsStream, null, "TURTLE");
             model.read(inputStream, null, "TURTLE");
 
             return buildTaxonomyTree(model);
 
+        } catch (TaxonomyLoadException e) {
+            throw e;
         } catch (Exception e) {
             throw new TaxonomyLoadException("Failed to load taxonomy from " + resourcePath, e);
         }
@@ -244,7 +261,7 @@ public abstract class RdfsTaxonomyLoader {
         }
 
         // Get properties defined for this class
-        List<PropertyDefinition> properties = getPropertiesForClass(classResource, model, namespace);
+        List<PropertyDefinition> properties = getPropertiesForClass(classResource, model);
 
         return CategoryInfo.builder()
                 .className(className)
@@ -294,7 +311,7 @@ public abstract class RdfsTaxonomyLoader {
     /**
      * Get properties that have this class as their domain
      */
-    private List<PropertyDefinition> getPropertiesForClass(Resource classResource, Model model, String namespace) {
+    private List<PropertyDefinition> getPropertiesForClass(Resource classResource, Model model) {
         List<PropertyDefinition> properties = new ArrayList<>();
         String classUri = classResource.getURI();
 
@@ -302,7 +319,7 @@ public abstract class RdfsTaxonomyLoader {
         while (propertyIterator.hasNext()) {
             Resource propertyResource = propertyIterator.nextResource();
 
-            if (propertyResource.getURI() != null && propertyResource.getURI().startsWith(namespace) && hasDomain(propertyResource, classUri)) {
+            if (propertyResource.getURI() != null && hasDomain(propertyResource, classUri)) {
                 PropertyDefinition propertyDef = buildPropertyDefinition(propertyResource);
                 properties.add(propertyDef);
             }
@@ -366,7 +383,8 @@ public abstract class RdfsTaxonomyLoader {
         }
 
         // Jurisdiction marker: common:jurisdiction "NO" ⇒ Norway-only property.
-        String jurisdiction = getJurisdiction(propertyResource);
+        String jurisdiction = getStringAnnotation(propertyResource, COMMON_JURISDICTION);
+        String privateSet = getStringAnnotation(propertyResource, COMMON_PRIVATE_SET);
 
         // Enumeration values: individuals typed by the range class, if any.
         List<EnumValue> enumValues = rangeStmt != null
@@ -383,15 +401,16 @@ public abstract class RdfsTaxonomyLoader {
                 .description(null) // Could add comments if needed
                 .multiValued(multiValued)
                 .jurisdiction(jurisdiction)
+                .privateSet(privateSet)
                 .enumValues(enumValues)
                 .build();
     }
 
     /**
-     * Extract the local name from a URI
+     * Read a plain string annotation (e.g. common:jurisdiction, common:privateSet); null when absent
      */
-    private String getJurisdiction(Resource resource) {
-        Statement stmt = resource.getProperty(COMMON_JURISDICTION);
+    private String getStringAnnotation(Resource resource, Property predicate) {
+        Statement stmt = resource.getProperty(predicate);
         return stmt != null ? stmt.getString() : null;
     }
 
@@ -436,7 +455,7 @@ public abstract class RdfsTaxonomyLoader {
                     .englishLabel(getLabel(individual, "en"))
                     .norwegianLabel(getLabel(individual, "no"))
                     .description(description)
-                    .jurisdiction(getJurisdiction(individual))
+                    .jurisdiction(getStringAnnotation(individual, COMMON_JURISDICTION))
                     .attributes(attributes)
                     .build());
         }
