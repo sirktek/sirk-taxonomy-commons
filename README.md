@@ -193,3 +193,9 @@ public class MyTaxonomyService extends TaxonomyService {
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## Releases
+
+Every merge to `main` tags `3.<run number>` and publishes it to GitHub Packages. Maven Central
+(monthly publishing limit) is manual: run "Publish release to Maven Central" with the tag when a
+Central consumer, such as sirk-app-backend, needs that version.
