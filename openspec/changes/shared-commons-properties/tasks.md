@@ -52,7 +52,7 @@ Files: `src/main/resources/taxonomy/common-base.ttl`,
 `src/test/java/no/sirktek/taxonomy/loader/DomainOptInLoaderTest.java`, `README.md`.
 Tests: `mvnq test -Dtest='CommonTaxonomyServiceTest,CommonPropertyDefinitionTest,DomainOptInLoaderTest'`
 
-- [ ] 2.1 Test first. `CommonPropertyDefinitionTest`: `AssetValuationEntry` → `ASSET_VALUATIONS`;
+- [x] 2.1 Test first. `CommonPropertyDefinitionTest`: `AssetValuationEntry` → `ASSET_VALUATIONS`;
       drop the `ASSET_VALUE` test. `CommonTaxonomyServiceTest`: rewrite
       `accountingPropertiesAreDeclared…` for `ledgerAccount`, `depreciationGroup`, `valuations`
       (ranges, `privateSet` `accounting`, no domain) and the absence of `bookValue`, `taxValue`,
@@ -63,15 +63,15 @@ Tests: `mvnq test -Dtest='CommonTaxonomyServiceTest,CommonPropertyDefinitionTest
       asserts the full key set `floors, depreciationGroup, valuations, marketValue`,
       `marketValue`'s `uri`, `privateSet` `commercial`, and `ASSET_VALUATIONS` for `valuations`.
       See them fail.
-- [ ] 2.2 `common-base.ttl`: add `AssetValuationEntry` and `valuations` (D3 text); delete
+- [x] 2.2 `common-base.ttl`: add `AssetValuationEntry` and `valuations` (D3 text); delete
       `bookValue`, `taxValue`, `wealthTaxValue`, `AssetValueEntry`; rewrite the two financial
       comment blocks around `valuations`; add the commercial section (D4).
-- [ ] 2.3 `CommonPropertyDefinition`: `AssetValuationEntry` → `ASSET_VALUATIONS`; remove
+- [x] 2.3 `CommonPropertyDefinition`: `AssetValuationEntry` → `ASSET_VALUATIONS`; remove
       `AssetValueEntry` and `ASSET_VALUE`; update the class javadoc.
-- [ ] 2.4 `README.md`: replace the bookValue/taxValue/wealthTaxValue table and prose with
+- [x] 2.4 `README.md`: replace the bookValue/taxValue/wealthTaxValue table and prose with
       `valuations` / `ASSET_VALUATIONS`, add `privateSet` and the commercial terms, state that
       the loader merges commons so `domainIncludes` opt-ins attach.
-- [ ] 2.5 Run the group's tests; then `mvnq test` once.
+- [x] 2.5 Run the group's tests; then `mvnq test` once.
 
 ## Not in scope
 

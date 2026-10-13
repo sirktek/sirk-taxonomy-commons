@@ -40,7 +40,7 @@ class DomainOptInLoaderTest {
     @Test
     void commonsPropertyNotOptedInStaysAbsent() {
         assertFalse(props.containsKey("ledgerAccount"));
-        assertEquals(2, props.size());
+        assertEquals(java.util.Set.of("floors", "depreciationGroup", "valuations", "marketValue"), props.keySet());
     }
 
     @Test
@@ -64,7 +64,16 @@ class DomainOptInLoaderTest {
     @Test
     void privateSetIsReadFromAnnotation() {
         assertEquals("accounting", props.get("depreciationGroup").privateSet());
+        assertEquals("accounting", props.get("valuations").privateSet());
+        assertEquals("commercial", props.get("marketValue").privateSet());
         assertNull(props.get("floors").privateSet());
+    }
+
+    @Test
+    void commercialPropertyKeepsCommonsUriAndValuationsMapsToAssetValuations() {
+        assertEquals("http://taxonomy.sirktek.no/common#marketValue", props.get("marketValue").uri());
+        assertEquals(no.sirktek.taxonomy.model.CommonPropertyDefinition.PropertyType.ASSET_VALUATIONS,
+                no.sirktek.taxonomy.model.CommonPropertyDefinition.getPropertyType(props.get("valuations")));
     }
 
     private static java.util.stream.Stream<String> allUris(List<CategoryInfo> cats) {

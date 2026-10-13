@@ -16,3 +16,5 @@ testdomain:floors a rdf:Property ;
 
 # Opt-ins (common:ledgerAccount is deliberately not opted in)
 common:depreciationGroup schema:domainIncludes testdomain:TestBuilding .
+common:valuations schema:domainIncludes testdomain:TestBuilding .
+common:marketValue schema:domainIncludes testdomain:TestBuilding .

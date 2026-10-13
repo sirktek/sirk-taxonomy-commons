@@ -61,19 +61,40 @@ This ID is a **load-bearing contract** across all consumers of this library. Any
 | Property | Label (no) | Range | Jurisdiction |
 |----------|------------|-------|--------------|
 | `common:ledgerAccount` | Regnskapskonto | `xsd:string` (e.g. `1200`) | any |
-| `common:bookValue` | Bokført verdi | `common:AssetValueEntry` (year, value) | any |
-| `common:taxValue` | Skattemessig verdi | `common:AssetValueEntry` (year, value) | any |
-| `common:wealthTaxValue` | Formuesverdi | `common:AssetValueEntry` (year, value) | `NO` |
+| `common:valuations` | Verdsettelser | `common:AssetValuationEntry` | any |
 | `common:depreciationGroup` | Saldogruppe | `common:DepreciationGroup` enumeration | any (values tagged) |
 
-The three per-year values follow three sets of rules: `bookValue` is the balance-sheet carrying
-amount (resultatregnskap), `taxValue` is the tax written-down value that the depreciation group's
-rate is applied to (skatteregnskap), and `wealthTaxValue` is the owners' wealth-tax basis.
-`wealthTaxValue` was previously named `assetValue`, and only real estate opts into it: for
-driftsmidler the formuesverdi is by rule the tax value at 31 December, so consumers derive it. All three share the `AssetValueEntry` shape,
-so a consumer that already renders per-year values needs no new DTO; `CommonPropertyDefinition`
-maps them all to `PropertyType.ASSET_VALUE`. `common:depreciationGroup` maps to
-`PropertyType.DEPRECIATION_GROUP`.
+All three carry `common:privateSet "accounting"`, and use the names and shape of ledger17's
+accounting taxonomy. `common:valuations` holds one entry per fiscal year,
+`{year, bookValue, taxValue, wealthValue}` (`bookValue` is the balance-sheet carrying amount,
+`taxValue` the tax written-down value the depreciation group's rate is applied to, `wealthValue`
+the Norwegian formuesverdi). `CommonPropertyDefinition` maps the range to
+`PropertyType.ASSET_VALUATIONS`; `common:depreciationGroup` maps to `PropertyType.DEPRECIATION_GROUP`.
+
+### Private property sets
+
+`common:privateSet` annotates a property with the key of the private property set its values belong
+to (`accounting`, `commercial`); the loader surfaces it as `PropertyDefinition.privateSet()`
+(`null` for a public property).
+
+### Commercial terms
+
+Jurisdiction-neutral, `common:privateSet "commercial"`, no domain (domains opt in):
+
+| Property | Label (no) | Range |
+|----------|------------|-------|
+| `common:marketValue` | Markedsverdi | `xsd:decimal` |
+| `common:marketValueDate` | Verdsettelsesdato | `xsd:date` |
+| `common:monthlyRent` | Månedsleie (eks. mva) | `xsd:decimal` |
+| `common:monthlyServiceCharge` | Felleskostnader per måned (eks. mva) | `xsd:decimal` |
+
+### Opting in from a domain
+
+`RdfsTaxonomyLoader` merges `common-base.ttl` into the model before the domain's own Turtle file, so
+a `common:<property> schema:domainIncludes <domain>:<Class>` triple in the domain file attaches the
+property to that class. The property keeps its local name as `name` and the full IRI as `uri`.
+Only classes of the loader's own namespace appear in the tree. A domain must not opt a class into a
+commons property whose local name it also declares on that class.
 
 `common:depreciationGroup` is one global property whose value list is per country: every
 instance of `common:DepreciationGroup` carries `common:jurisdiction`. Today the instances are the
@@ -95,8 +116,7 @@ property, e.g. `logistics:type` → `logistics:LocationType`.
 
 Country-specific definitions stay in the `common:` namespace but carry
 `common:jurisdiction "<ISO 3166-1 alpha-2>"`. The tag works at two levels. On a property it means the whole property only applies in that
-country: currently `common:wealthTaxValue` (formuesverdi, a wealth-tax figure; the balance-sheet
-amount is the neutral `common:bookValue`). On an enumeration value it means only that value
+country (no commons property uses it today). On an enumeration value it means only that value
 applies there: currently the saldogruppe instances.
 `RdfsTaxonomyLoader` surfaces the property-level annotation as `PropertyDefinition.jurisdiction()`
 (`null` when the property applies everywhere) so a consumer can hide the property for

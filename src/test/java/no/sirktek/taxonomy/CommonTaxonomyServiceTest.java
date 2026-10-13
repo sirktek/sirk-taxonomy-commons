@@ -149,46 +149,64 @@ class CommonTaxonomyServiceTest {
     }
 
     @Test
-    void accountingPropertiesAreDeclaredWithExpectedRangesAndJurisdiction() {
+    void accountingPropertiesAreDeclaredWithExpectedRangesAndPrivateSet() {
         Model model = loadCommonModel();
         String ns = "http://taxonomy.sirktek.no/common#";
         Property jurisdiction = model.createProperty(ns + "jurisdiction");
+        Property privateSet = model.createProperty(ns + "privateSet");
 
         Resource ledgerAccount = model.getResource(ns + "ledgerAccount");
-        Resource bookValue = model.getResource(ns + "bookValue");
-        Resource taxValue = model.getResource(ns + "taxValue");
-        Resource wealthTaxValue = model.getResource(ns + "wealthTaxValue");
-        assertNull(model.getProperty(model.getResource(ns + "assetValue"), RDF.type),
-                "assetValue was renamed to wealthTaxValue");
+        Resource valuations = model.getResource(ns + "valuations");
         Resource depreciationGroup = model.getResource(ns + "depreciationGroup");
 
         assertEquals("http://www.w3.org/2001/XMLSchema#string",
                 ledgerAccount.getRequiredProperty(RDFS.range).getResource().getURI());
-        for (Resource p : List.of(bookValue, taxValue, wealthTaxValue)) {
-            assertEquals(ns + "AssetValueEntry",
-                    p.getRequiredProperty(RDFS.range).getResource().getURI(),
-                    p.getURI() + " reuses the AssetValueEntry (year, value) shape so consumers need no new DTO");
-        }
+        assertEquals(ns + "AssetValuationEntry", valuations.getRequiredProperty(RDFS.range).getResource().getURI());
         assertEquals(ns + "DepreciationGroup",
                 depreciationGroup.getRequiredProperty(RDFS.range).getResource().getURI());
 
-        assertEquals("NO", wealthTaxValue.getRequiredProperty(jurisdiction).getString(),
-                "formuesverdi is a Norwegian wealth-tax figure");
-        assertNull(taxValue.getProperty(jurisdiction), "every tax regime has a tax written-down value");
+        for (String gone : List.of("bookValue", "taxValue", "wealthTaxValue", "AssetValueEntry")) {
+            assertNull(model.getResource(ns + gone).getProperty(RDF.type), gone + " was replaced by valuations");
+        }
+
         assertNull(depreciationGroup.getProperty(jurisdiction),
                 "depreciationGroup is global; its values are tagged per jurisdiction instead");
         assertNull(model.getResource(ns + "DepreciationGroup").getProperty(jurisdiction),
                 "the enumeration class is global; its instances are tagged");
         assertNull(ledgerAccount.getProperty(jurisdiction), "ledgerAccount is jurisdiction-neutral");
-        assertNull(bookValue.getProperty(jurisdiction), "bookValue is jurisdiction-neutral");
-        assertNull(model.getResource(ns + "AssetValueEntry").getProperty(jurisdiction),
-                "the shared (year, value) range marker stays neutral because bookValue uses it too");
+        assertNull(valuations.getProperty(jurisdiction), "valuations is neutral; only its wealthValue field is Norwegian");
 
         // No domain in commons: domains opt in via schema:domainIncludes in their own ttl.
         Property domainIncludes = model.createProperty("https://schema.org/domainIncludes");
-        for (Resource p : List.of(ledgerAccount, bookValue, taxValue, wealthTaxValue, depreciationGroup)) {
+        for (Resource p : List.of(ledgerAccount, valuations, depreciationGroup)) {
+            assertEquals("accounting", p.getRequiredProperty(privateSet).getString());
             assertNull(p.getProperty(RDFS.domain), p.getURI() + " must not fix a domain in commons");
             assertNull(p.getProperty(domainIncludes), p.getURI() + " must not fix a domain in commons");
+        }
+    }
+
+    @Test
+    void commercialTermsAreDeclaredWithRangesLabelsAndPrivateSet() {
+        Model model = loadCommonModel();
+        String ns = "http://taxonomy.sirktek.no/common#";
+        String xsd = "http://www.w3.org/2001/XMLSchema#";
+        Property privateSet = model.createProperty(ns + "privateSet");
+        Property domainIncludes = model.createProperty("https://schema.org/domainIncludes");
+
+        record Term(String name, String range, String en, String no) { }
+        for (Term t : List.of(
+                new Term("marketValue", "decimal", "Market value", "Markedsverdi"),
+                new Term("marketValueDate", "date", "Valuation date", "Verdsettelsesdato"),
+                new Term("monthlyRent", "decimal", "Monthly rent (excl. VAT)", "Månedsleie (eks. mva)"),
+                new Term("monthlyServiceCharge", "decimal", "Monthly service charge (excl. VAT)",
+                        "Felleskostnader per måned (eks. mva)"))) {
+            Resource p = model.getResource(ns + t.name());
+            assertEquals(xsd + t.range(), p.getRequiredProperty(RDFS.range).getResource().getURI(), t.name());
+            assertEquals(t.en(), p.getProperty(RDFS.label, "en").getString(), t.name());
+            assertEquals(t.no(), p.getProperty(RDFS.label, "no").getString(), t.name());
+            assertEquals("commercial", p.getRequiredProperty(privateSet).getString(), t.name());
+            assertNull(p.getProperty(RDFS.domain), t.name());
+            assertNull(p.getProperty(domainIncludes), t.name());
         }
     }
 
@@ -256,7 +274,7 @@ class CommonTaxonomyServiceTest {
 
     @Test
     void rangeMarkerClassesHaveNoProperties() {
-        for (String marker : List.of("EmissionEntry", "ConsistsOfEntry", "EnergySourceEntry", "AllocationEntry", "AssetValueEntry")) {
+        for (String marker : List.of("EmissionEntry", "ConsistsOfEntry", "EnergySourceEntry", "AllocationEntry", "AssetValuationEntry")) {
             CategoryInfo cat = taxonomyService.getCategoryByClassName(marker).orElseThrow();
             assertEquals(0, cat.properties().size(),
                     marker + " is a property-range marker — should declare no rdf:Property of its own");
