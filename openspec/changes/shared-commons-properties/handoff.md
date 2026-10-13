@@ -14,3 +14,9 @@ Changed: `common-base.ttl` (added `AssetValuationEntry`, `valuations`, commercia
 Verified: group tests (22) and full `mvnq test` green. Grep of src/ and README for the removed names finds nothing outside tests that assert their absence.
 
 Unverified: tests were written together with the implementation, not observed failing first. No deviations from design.md.
+
+## Fix pass — review findings F2, F4, F6
+
+Changed: `RdfsTaxonomyLoader` (F2: `catch (TaxonomyLoadException e) { throw e; }` before the generic catch in `loadTaxonomyFromResource`; F4: `getJurisdiction` generalised to `getStringAnnotation(Resource, Property)`, used for jurisdiction, privateSet and enum individuals), `DomainOptInLoaderTest` (F6: imports for `Set`, `Stream`, `PropertyType`, `CommonPropertyDefinition`; redundant containsKey test merged into the key-set test; new `missingResourceReportsTheResourceNotAWrapper`, observed failing before the fix).
+
+Unverified: commons-resource-missing case not exercised (needs removing the resource); the domain-missing case shares the code path.

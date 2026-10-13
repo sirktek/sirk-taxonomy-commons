@@ -117,6 +117,8 @@ public abstract class RdfsTaxonomyLoader {
 
             return buildTaxonomyTree(model);
 
+        } catch (TaxonomyLoadException e) {
+            throw e;
         } catch (Exception e) {
             throw new TaxonomyLoadException("Failed to load taxonomy from " + resourcePath, e);
         }
@@ -381,10 +383,8 @@ public abstract class RdfsTaxonomyLoader {
         }
 
         // Jurisdiction marker: common:jurisdiction "NO" ⇒ Norway-only property.
-        String jurisdiction = getJurisdiction(propertyResource);
-
-        Statement privateSetStmt = propertyResource.getProperty(COMMON_PRIVATE_SET);
-        String privateSet = privateSetStmt != null ? privateSetStmt.getString() : null;
+        String jurisdiction = getStringAnnotation(propertyResource, COMMON_JURISDICTION);
+        String privateSet = getStringAnnotation(propertyResource, COMMON_PRIVATE_SET);
 
         // Enumeration values: individuals typed by the range class, if any.
         List<EnumValue> enumValues = rangeStmt != null
@@ -407,10 +407,10 @@ public abstract class RdfsTaxonomyLoader {
     }
 
     /**
-     * Extract the local name from a URI
+     * Read a plain string annotation (e.g. common:jurisdiction, common:privateSet); null when absent
      */
-    private String getJurisdiction(Resource resource) {
-        Statement stmt = resource.getProperty(COMMON_JURISDICTION);
+    private String getStringAnnotation(Resource resource, Property predicate) {
+        Statement stmt = resource.getProperty(predicate);
         return stmt != null ? stmt.getString() : null;
     }
 
@@ -455,7 +455,7 @@ public abstract class RdfsTaxonomyLoader {
                     .englishLabel(getLabel(individual, "en"))
                     .norwegianLabel(getLabel(individual, "no"))
                     .description(description)
-                    .jurisdiction(getJurisdiction(individual))
+                    .jurisdiction(getStringAnnotation(individual, COMMON_JURISDICTION))
                     .attributes(attributes)
                     .build());
         }

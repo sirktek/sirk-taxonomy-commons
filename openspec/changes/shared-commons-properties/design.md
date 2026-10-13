@@ -206,3 +206,7 @@ follow-ups in proposal.md.
   loading until remove-category-accounting.
 - A domain bump without its TTL follow-up shows accounting on Machine/Furniture/Hardware/Software
   in orgadmin's tree: mitigated by bundling bump and opt-in edit per domain.
+- The same applies on the consumer side: orgadmin-backend pins taxonomy-commons directly, so
+  Maven nearest-wins applies the merging loader to whatever domain jars it still has. Its bump
+  must land together with, or after, all four domain follow-ups; otherwise the old
+  `ledgerAccount` / `depreciationGroup` opt-ins attach in orgadmin's tree until they do.

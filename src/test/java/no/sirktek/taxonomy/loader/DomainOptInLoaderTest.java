@@ -1,15 +1,20 @@
 package no.sirktek.taxonomy.loader;
 
 import no.sirktek.taxonomy.model.CategoryInfo;
+import no.sirktek.taxonomy.model.CommonPropertyDefinition;
+import no.sirktek.taxonomy.model.CommonPropertyDefinition.PropertyType;
 import no.sirktek.taxonomy.model.EnumValue;
 import no.sirktek.taxonomy.model.PropertyDefinition;
 import no.sirktek.taxonomy.model.TaxonomyTree;
+import no.sirktek.taxonomy.loader.RdfsTaxonomyLoader.TaxonomyLoadException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,18 +34,20 @@ class DomainOptInLoaderTest {
     }
 
     @Test
-    void optedInCommonsPropertyAttachesNextToOwnProperties() {
-        assertTrue(props.containsKey("floors"));
+    void optedInCommonsPropertyAttachesNextToOwnPropertiesAndUnoptedStaysAbsent() {
+        assertEquals(Set.of("floors", "depreciationGroup", "valuations", "marketValue"), props.keySet());
         PropertyDefinition dg = props.get("depreciationGroup");
-        assertNotNull(dg);
         assertEquals("http://taxonomy.sirktek.no/common#depreciationGroup", dg.uri());
         assertNull(dg.domainClass());
     }
 
     @Test
-    void commonsPropertyNotOptedInStaysAbsent() {
-        assertFalse(props.containsKey("ledgerAccount"));
-        assertEquals(java.util.Set.of("floors", "depreciationGroup", "valuations", "marketValue"), props.keySet());
+    void missingResourceReportsTheResourceNotAWrapper() {
+        TaxonomyLoadException e = assertThrows(TaxonomyLoadException.class,
+                () -> new TestDomainLoader().loadTaxonomyFromResource("/taxonomy/does-not-exist.ttl"));
+        assertTrue(e.getMessage().contains("Could not find resource"));
+        assertTrue(e.getMessage().contains("/taxonomy/does-not-exist.ttl"));
+        assertFalse(e.getMessage().startsWith("Failed to load"));
     }
 
     @Test
@@ -72,12 +79,12 @@ class DomainOptInLoaderTest {
     @Test
     void commercialPropertyKeepsCommonsUriAndValuationsMapsToAssetValuations() {
         assertEquals("http://taxonomy.sirktek.no/common#marketValue", props.get("marketValue").uri());
-        assertEquals(no.sirktek.taxonomy.model.CommonPropertyDefinition.PropertyType.ASSET_VALUATIONS,
-                no.sirktek.taxonomy.model.CommonPropertyDefinition.getPropertyType(props.get("valuations")));
+        assertEquals(PropertyType.ASSET_VALUATIONS,
+                CommonPropertyDefinition.getPropertyType(props.get("valuations")));
     }
 
-    private static java.util.stream.Stream<String> allUris(List<CategoryInfo> cats) {
-        return cats.stream().flatMap(c -> java.util.stream.Stream.concat(
-                java.util.stream.Stream.of(c.uri()), allUris(c.children())));
+    private static Stream<String> allUris(List<CategoryInfo> cats) {
+        return cats.stream().flatMap(c -> Stream.concat(
+                Stream.of(c.uri()), allUris(c.children())));
     }
 }
