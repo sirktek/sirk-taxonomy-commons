@@ -35,7 +35,7 @@ class DomainOptInLoaderTest {
 
     @Test
     void optedInCommonsPropertyAttachesNextToOwnPropertiesAndUnoptedStaysAbsent() {
-        assertEquals(Set.of("floors", "depreciationGroup", "valuations", "marketValue"), props.keySet());
+        assertEquals(Set.of("floors", "depreciationGroup", "valuations", "marketValue", "weight"), props.keySet());
         PropertyDefinition dg = props.get("depreciationGroup");
         assertEquals("http://taxonomy.sirktek.no/common#depreciationGroup", dg.uri());
         assertNull(dg.domainClass());
@@ -79,6 +79,7 @@ class DomainOptInLoaderTest {
     @Test
     void commercialPropertyKeepsCommonsUriAndValuationsMapsToAssetValuations() {
         assertEquals("http://taxonomy.sirktek.no/common#marketValue", props.get("marketValue").uri());
+        assertEquals("http://taxonomy.sirktek.no/common#weight", props.get("weight").uri());
         assertEquals(PropertyType.ASSET_VALUATIONS,
                 CommonPropertyDefinition.getPropertyType(props.get("valuations")));
     }

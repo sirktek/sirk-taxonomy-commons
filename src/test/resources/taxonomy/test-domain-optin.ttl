@@ -18,3 +18,4 @@ testdomain:floors a rdf:Property ;
 common:depreciationGroup schema:domainIncludes testdomain:TestBuilding .
 common:valuations schema:domainIncludes testdomain:TestBuilding .
 common:marketValue schema:domainIncludes testdomain:TestBuilding .
+common:weight schema:domainIncludes testdomain:TestBuilding .

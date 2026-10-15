@@ -89,7 +89,8 @@ common:homepage a rdf:Property ;
 
 common:manufacturer a rdf:Property ;
     rdfs:label "Manufacturer"@en, "Produsent"@no ;
-    rdfs:domain common:Model ;
+    skos:altLabel "Vendor"@en ;
+    schema:domainIncludes common:Model ;
     rdfs:range common:Manufacturer .
 
 common:epd a rdf:Property ;
@@ -144,6 +145,66 @@ common:resourceVariant a rdf:Property ;
     schema:domainIncludes common:Model ;
     schema:domainIncludes common:Resource ;
     rdfs:range common:ResourceVariant .
+
+# -------------------------------------------------------------------
+# Shared asset properties
+#
+# Physical and identifying properties that several domains use on their
+# asset classes. Declared once, with no domain; each domain opts its
+# classes in with `schema:domainIncludes` in its own ttl. Keys are the
+# local names, so stored values do not depend on the namespace.
+# -------------------------------------------------------------------
+
+common:model a rdf:Property ;
+    rdfs:label "Model"@en, "Modell"@no ;
+    rdfs:range common:Model .
+
+common:serialNumber a rdf:Property ;
+    rdfs:label "Serial Number"@en, "Serienummer"@no ;
+    rdfs:range xsd:string .
+
+common:variant a rdf:Property ;
+    rdfs:label "Variant"@en, "Variant"@no ;
+    rdfs:range xsd:string .
+
+common:color a rdf:Property ;
+    rdfs:label "Color"@en, "Farge"@no ;
+    rdfs:range xsd:string .
+
+common:material a rdf:Property ;
+    rdfs:label "Material"@en, "Materiale"@no ;
+    rdfs:range xsd:string .
+
+common:operationsAndMaintenanceManual a rdf:Property ;
+    rdfs:label "Operations and Maintenance Manual"@en, "Drift- og vedlikeholdshåndbok"@no ;
+    rdfs:range xsd:anyURI .
+
+common:length a rdf:Property ;
+    rdfs:label "Length (cm)"@en, "Lengde (cm)"@no ;
+    rdfs:range xsd:decimal .
+
+common:width a rdf:Property ;
+    rdfs:label "Width (cm)"@en, "Bredde (cm)"@no ;
+    rdfs:range xsd:decimal .
+
+common:height a rdf:Property ;
+    rdfs:label "Height (cm)"@en, "Høyde (cm)"@no ;
+    rdfs:range xsd:decimal .
+
+common:weight a rdf:Property ;
+    rdfs:label "Weight (kg)"@en, "Vekt (kg)"@no ;
+    rdfs:comment "The weight in kilograms"@en ;
+    rdfs:range xsd:decimal .
+
+common:volume a rdf:Property ;
+    rdfs:label "Volume (m³)"@en, "Volum (m³)"@no ;
+    rdfs:comment "The volume in cubic meters"@en ;
+    rdfs:range xsd:decimal .
+
+common:controlChecklist a rdf:Property ;
+    rdfs:label "Checklist"@en, "Sjekkliste"@no ;
+    rdfs:comment "The checks to perform on the asset on each visit of a control round: one ChecklistTemplate v1 (see ChecklistTemplateEntry). Set on a category it is the default for every asset in that category; set on an asset it replaces the category default"@en ;
+    rdfs:range common:ChecklistTemplateEntry .
 
 # -------------------------------------------------------------------
 # Cross-cutting financial properties

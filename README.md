@@ -88,6 +88,27 @@ Jurisdiction-neutral, `common:privateSet "commercial"`, no domain (domains opt i
 | `common:monthlyRent` | Månedsleie (eks. mva) | `xsd:decimal` |
 | `common:monthlyServiceCharge` | Felleskostnader per måned (eks. mva) | `xsd:decimal` |
 
+### Shared asset properties
+
+No domain, no `privateSet` (domains opt in). `common:manufacturer` (above) is shared the same way:
+it names `common:Model` with `schema:domainIncludes`, so a domain can attach it to its own classes.
+`address` stays per domain: `common:address` describes a manufacturer, `logistics:address` a location.
+
+| Property | Label (no) | Range |
+|----------|------------|-------|
+| `common:model` | Modell | `common:Model` |
+| `common:serialNumber` | Serienummer | `xsd:string` |
+| `common:variant` | Variant | `xsd:string` |
+| `common:color` | Farge | `xsd:string` |
+| `common:material` | Materiale | `xsd:string` |
+| `common:operationsAndMaintenanceManual` | Drift- og vedlikeholdshåndbok | `xsd:anyURI` |
+| `common:length` | Lengde (cm) | `xsd:decimal` |
+| `common:width` | Bredde (cm) | `xsd:decimal` |
+| `common:height` | Høyde (cm) | `xsd:decimal` |
+| `common:weight` | Vekt (kg) | `xsd:decimal` |
+| `common:volume` | Volum (m³) | `xsd:decimal` |
+| `common:controlChecklist` | Sjekkliste | `common:ChecklistTemplateEntry` |
+
 ### Opting in from a domain
 
 `RdfsTaxonomyLoader` merges `common-base.ttl` into the model before the domain's own Turtle file, so
