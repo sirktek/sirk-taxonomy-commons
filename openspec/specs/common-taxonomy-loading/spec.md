@@ -1,7 +1,7 @@
 # common-taxonomy-loading Specification
 
 ## Purpose
-TBD - created by archiving change shared-commons-properties. Update Purpose after archive.
+How domain taxonomies load common-base.ttl: which commons properties a domain class gains, and which shared terms are declared once in commons instead of per domain.
 ## Requirements
 ### Requirement: Domain classes gain commons properties they opt into
 
@@ -63,4 +63,36 @@ English and Norwegian labels, `common:privateSet "commercial"` and without a dom
 #### Scenario: Commercial term declaration
 - **WHEN** the commons model is read
 - **THEN** `common:monthlyRent` has range `xsd:decimal`, labels "Monthly rent (excl. VAT)"@en and "Månedsleie (eks. mva)"@no, `common:privateSet` "commercial", and neither `rdfs:domain` nor `schema:domainIncludes`
+
+### Requirement: Shared asset properties are declared once in commons
+
+Commons SHALL declare `common:color`, `common:material`, `common:variant`, `common:serialNumber`
+(`xsd:string`), `common:model` (range `common:Model`), `common:operationsAndMaintenanceManual`
+(`xsd:anyURI`), `common:length`, `common:width`, `common:height`, `common:weight` and
+`common:volume` (`xsd:decimal`), each with an English and a Norwegian label and without
+`rdfs:domain` or `schema:domainIncludes`. Commons SHALL declare `common:controlChecklist` with
+range `common:ChecklistTemplateEntry`, labels "Checklist"@en and "Sjekkliste"@no, and no domain.
+`common:manufacturer` SHALL name `common:Model` with
+`schema:domainIncludes`, not `rdfs:domain`. A domain taxonomy SHALL attach these properties to its
+classes with `schema:domainIncludes` and SHALL NOT declare a property with the same local name.
+
+#### Scenario: Shared property declaration
+- **WHEN** the commons model is read
+- **THEN** `common:weight` has range `xsd:decimal`, labels "Weight (kg)"@en and "Vekt (kg)"@no, and neither `rdfs:domain` nor `schema:domainIncludes`
+
+#### Scenario: Checklist property declared once in commons
+- **WHEN** the commons model is read
+- **THEN** `common:controlChecklist` has range `common:ChecklistTemplateEntry`, labels "Checklist"@en and "Sjekkliste"@no, and neither `rdfs:domain` nor `schema:domainIncludes`
+
+#### Scenario: Shared property attaches without a key clash
+- **WHEN** a domain Turtle file states `common:weight schema:domainIncludes d:TestBuilding` and its loader loads it
+- **THEN** `TestBuilding` has exactly one property named `weight`, with `uri` `http://taxonomy.sirktek.no/common#weight`
+
+#### Scenario: Manufacturer stays on the commons Model class
+- **WHEN** the commons taxonomy is loaded
+- **THEN** the category `Model` has a property `manufacturer` with range `common:Manufacturer`, and `common:manufacturer` has no `rdfs:domain`
+
+#### Scenario: Shared properties attach nowhere by themselves
+- **WHEN** the commons taxonomy is loaded
+- **THEN** no commons category has a property named `weight`, `color` or `serialNumber`
 
