@@ -211,6 +211,63 @@ class CommonTaxonomyServiceTest {
     }
 
     @Test
+    void sharedAssetPropertiesAreDeclaredWithoutDomain() {
+        Model model = loadCommonModel();
+        String ns = "http://taxonomy.sirktek.no/common#";
+        String xsd = "http://www.w3.org/2001/XMLSchema#";
+        Property privateSet = model.createProperty(ns + "privateSet");
+        Property domainIncludes = model.createProperty("https://schema.org/domainIncludes");
+
+        record Term(String name, String range, String en, String no) { }
+        for (Term t : List.of(
+                new Term("color", xsd + "string", "Color", "Farge"),
+                new Term("material", xsd + "string", "Material", "Materiale"),
+                new Term("variant", xsd + "string", "Variant", "Variant"),
+                new Term("serialNumber", xsd + "string", "Serial Number", "Serienummer"),
+                new Term("model", ns + "Model", "Model", "Modell"),
+                new Term("operationsAndMaintenanceManual", xsd + "anyURI",
+                        "Operations and Maintenance Manual", "Drift- og vedlikeholdshåndbok"),
+                new Term("length", xsd + "decimal", "Length (cm)", "Lengde (cm)"),
+                new Term("width", xsd + "decimal", "Width (cm)", "Bredde (cm)"),
+                new Term("height", xsd + "decimal", "Height (cm)", "Høyde (cm)"),
+                new Term("weight", xsd + "decimal", "Weight (kg)", "Vekt (kg)"),
+                new Term("volume", xsd + "decimal", "Volume (m³)", "Volum (m³)"),
+                new Term("controlChecklist", ns + "ChecklistTemplateEntry", "Checklist", "Sjekkliste"))) {
+            Resource p = model.getResource(ns + t.name());
+            assertEquals(t.range(), p.getRequiredProperty(RDFS.range).getResource().getURI(), t.name());
+            assertEquals(t.en(), p.getProperty(RDFS.label, "en").getString(), t.name());
+            assertEquals(t.no(), p.getProperty(RDFS.label, "no").getString(), t.name());
+            assertNull(p.getProperty(privateSet), t.name());
+            assertNull(p.getProperty(RDFS.domain), t.name());
+            assertNull(p.getProperty(domainIncludes), t.name());
+        }
+
+        Resource manufacturer = model.getResource(ns + "manufacturer");
+        assertEquals("Vendor", manufacturer.getProperty(
+                model.createProperty("http://www.w3.org/2004/02/skos/core#altLabel"), "en").getString());
+        assertNull(manufacturer.getProperty(RDFS.domain));
+        assertEquals(ns + "Model", manufacturer.getRequiredProperty(domainIncludes).getResource().getURI());
+    }
+
+    @Test
+    void sharedAssetPropertiesAttachToNoCommonsCategory() {
+        List<CategoryInfo> all = new java.util.ArrayList<>();
+        collect(taxonomyService.loadBaseTaxonomy().rootCategories(), all);
+        for (CategoryInfo c : all) {
+            Set<String> names = c.properties().stream().map(p -> p.name()).collect(Collectors.toSet());
+            assertTrue(names.stream().noneMatch(n -> Set.of("weight", "color", "serialNumber").contains(n)),
+                    c.className() + " has " + names);
+        }
+    }
+
+    private static void collect(List<CategoryInfo> cats, List<CategoryInfo> out) {
+        for (CategoryInfo c : cats) {
+            out.add(c);
+            collect(c.children(), out);
+        }
+    }
+
+    @Test
     void loaderSurfacesJurisdictionOnPropertyDefinition() {
         TaxonomyTree tree = new CommonRdfsTaxonomyLoader()
                 .loadTaxonomyFromResource("/taxonomy/test-jurisdiction.ttl");

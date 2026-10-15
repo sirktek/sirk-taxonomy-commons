@@ -27,7 +27,7 @@ Files: `src/main/resources/taxonomy/common-base.ttl`,
 `src/test/java/no/sirktek/taxonomy/loader/DomainOptInLoaderTest.java`, `README.md`.
 Tests: `mvnq test -Dtest='CommonTaxonomyServiceTest,DomainOptInLoaderTest'`
 
-- [ ] 1.1 Test first. `CommonTaxonomyServiceTest`: add `sharedAssetPropertiesAreDeclaredWithoutDomain`,
+- [x] 1.1 Test first. `CommonTaxonomyServiceTest`: add `sharedAssetPropertiesAreDeclaredWithoutDomain`,
       in the style of `commercialTermsAreDeclaredWithRangesLabelsAndPrivateSet`. It covers the
       eleven names, their ranges and en/no labels (design D2 "Commons term" column), no
       `rdfs:domain`, no `schema:domainIncludes` and no `privateSet`. Assert that
@@ -37,13 +37,13 @@ Tests: `mvnq test -Dtest='CommonTaxonomyServiceTest,DomainOptInLoaderTest'`
       `common:weight schema:domainIncludes testdomain:TestBuilding .`. `DomainOptInLoaderTest`:
       add `weight` to the expected key set (`toMap` fails on a duplicate key) and assert its `uri`
       is `common#weight`. See them fail.
-- [ ] 1.2 `common-base.ttl`: add the "Shared asset properties" section (design "Commons TTL")
+- [x] 1.2 `common-base.ttl`: add the "Shared asset properties" section (design "Commons TTL")
       after `common:resourceVariant`, and rewrite `common:manufacturer` as shown there.
-- [ ] 1.3 Add `common:controlChecklist` (design D5 text) to the same section. In 1.1, assert
+- [x] 1.3 Add `common:controlChecklist` (design D5 text) to the same section. In 1.1, assert
       its range `common:ChecklistTemplateEntry`, its labels "Checklist"/"Sjekkliste" and no domain.
-- [ ] 1.4 `README.md`: a "Shared asset properties" table (property, label (no), range) next to
+- [x] 1.4 `README.md`: a "Shared asset properties" table (property, label (no), range) next to
       "Commercial terms". Note that domains opt in and that `address` stays per domain (D3).
-- [ ] 1.5 Run the group's tests, then `mvnq test` once, then
+- [x] 1.5 Run the group's tests, then `mvnq test` once, then
       `openspec validate consolidate-shared-properties --strict`. Note the merge tag in the handoff.
 
 ### Group 2: sirk-furniture-taxonomy
