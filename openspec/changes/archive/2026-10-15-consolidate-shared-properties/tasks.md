@@ -52,16 +52,16 @@ Files: `src/main/resources/taxonomy/furniture-base.ttl`, `pom.xml` (only the `ta
 version), `src/test/java/no/sirktek/taxonomy/CommonPropertyOptInTest.java`, `README.md`.
 Tests: `mvnq test -Dtest='CommonPropertyOptInTest,TaxonomyServiceTest,PropertyDefinitionTest'`
 
-- [ ] 2.1 Bump `taxonomy-commons` to Group 1's tag.
-- [ ] 2.2 Test first, in `CommonPropertyOptInTest`: `Furniture` carries each of the eleven names
+- [x] 2.1 Bump `taxonomy-commons` to Group 1's tag.
+- [x] 2.2 Test first, in `CommonPropertyOptInTest`: `Furniture` carries each of the eleven names
       exactly once, with `uri` `http://taxonomy.sirktek.no/common#<name>`, and no property has a
       `furniture#` IRI with one of those names. See it fail.
-- [ ] 2.3 Delete the eleven `furniture:*` declarations (design D2 lines). That includes
+- [x] 2.3 Delete the eleven `furniture:*` declarations (design D2 lines). That includes
       `operationsAndMaintenanceManual`'s inert `domainIncludes common:Model`. Next to the
       existing opt-ins at the end of the file, add
       `common:<name> schema:domainIncludes furniture:Furniture .` for each name.
-- [ ] 2.4 `README.md`: one line naming the shared properties in the opt-in paragraph (~line 93).
-- [ ] 2.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
+- [x] 2.4 `README.md`: one line naming the shared properties in the opt-in paragraph (~line 93).
+- [x] 2.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
 
 ### Group 3: sirk-ict-taxonomy
 
@@ -69,15 +69,15 @@ Files: `src/main/resources/taxonomy/ict-base.ttl`, `pom.xml` (only the `taxonomy
 version), `src/test/java/no/sirktek/taxonomy/CommonPropertyOptInTest.java`, `README.md`.
 Tests: `mvnq test -Dtest='CommonPropertyOptInTest,TaxonomyServiceTest,PropertyDefinitionTest'`
 
-- [ ] 3.1 Bump `taxonomy-commons` to Group 1's tag.
-- [ ] 3.2 Test first: `Hardware` and `Software` each carry `manufacturer` and `model` once, with
+- [x] 3.1 Bump `taxonomy-commons` to Group 1's tag.
+- [x] 3.2 Test first: `Hardware` and `Software` each carry `manufacturer` and `model` once, with
       `common#` IRIs. `Hardware` carries `serialNumber` once (`common#serialNumber`), and
       `Software` does not carry it. See it fail.
-- [ ] 3.3 Delete `ict:manufacturer`, `ict:model` and `ict:serialNumber` (ict-base.ttl:134, 141,
+- [x] 3.3 Delete `ict:manufacturer`, `ict:model` and `ict:serialNumber` (ict-base.ttl:134, 141,
       157). Add `common:manufacturer` and `common:model` `schema:domainIncludes ict:Hardware,
       ict:Software`, and `common:serialNumber schema:domainIncludes ict:Hardware`.
-- [ ] 3.4 `README.md` line ~26: the shared properties come from commons; `purchaseDate` stays ict.
-- [ ] 3.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
+- [x] 3.4 `README.md` line ~26: the shared properties come from commons; `purchaseDate` stays ict.
+- [x] 3.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
 
 ### Group 4: sirk-logistics-taxonomy
 
@@ -86,21 +86,21 @@ version), `src/test/java/no/sirktek/taxonomy/CommonPropertyOptInTest.java`,
 `src/test/java/no/sirktek/taxonomy/TaxonomyServiceTest.java` (only with 4.3), `README.md`.
 Tests: `mvnq test -Dtest='CommonPropertyOptInTest,TaxonomyServiceTest,PropertyDefinitionTest'`
 
-- [ ] 4.1 Bump `taxonomy-commons` to Group 1's tag.
-- [ ] 4.2 Test first: `Freight` carries `weight` and `volume` once each, with `common#` IRIs and
+- [x] 4.1 Bump `taxonomy-commons` to Group 1's tag.
+- [x] 4.2 Test first: `Freight` carries `weight` and `volume` once each, with `common#` IRIs and
       labels "Weight (kg)"/"Vekt (kg)" and "Volume (m³)"/"Volum (m³)". `address` on `Location`
       keeps the IRI `logistics#address`. Delete `logistics:weight` and `logistics:volume`
       (logistics-base.ttl:371, 377). Add `common:weight` and `common:volume`
       `schema:domainIncludes logistics:Freight` next to the existing opt-ins (~line 226).
-- [ ] 4.3 Replaces this repo's `checklists` slice. In `TaxonomyServiceTest` (~129-137) and
+- [x] 4.3 Replaces this repo's `checklists` slice. In `TaxonomyServiceTest` (~129-137) and
       the opt-in test, `ControlPoint` carries `controlChecklist` once, with IRI
       `common#controlChecklist`, range `common#ChecklistTemplateEntry`, labels unchanged, and
       `CommonPropertyDefinition.getPropertyType` = `CHECKLIST`. Delete `logistics:controlChecklist`
       (line 260) and add `common:controlChecklist schema:domainIncludes logistics:ControlPoint`.
       Archive `openspec/changes/checklists` as superseded.
-- [ ] 4.4 `README.md` opt-in paragraph (~line 93): list `weight` and `volume` and
+- [x] 4.4 `README.md` opt-in paragraph (~line 93): list `weight` and `volume` and
       `controlChecklist`.
-- [ ] 4.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
+- [x] 4.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
 
 ### Group 5: sirk-machine-taxonomy
 
@@ -109,19 +109,19 @@ version), `src/test/java/no/sirktek/taxonomy/CommonPropertyOptInTest.java`,
 `src/test/java/no/sirktek/taxonomy/ControlChecklistPropertyTest.java`, `README.md`.
 Tests: `mvnq test -Dtest='CommonPropertyOptInTest,ControlChecklistPropertyTest,TaxonomyServiceTest,PropertyDefinitionTest'`
 
-- [ ] 5.1 Bump `taxonomy-commons` to Group 1's tag.
-- [ ] 5.2 Test first: `Machine` carries the eleven names and `manufacturer` once each, with
+- [x] 5.1 Bump `taxonomy-commons` to Group 1's tag.
+- [x] 5.2 Test first: `Machine` carries the eleven names and `manufacturer` once each, with
       `common#` IRIs, and no `machine#` IRI for them. `monthlyRent` and the no-accounting
       assertions stay. Delete the twelve `machine:*` declarations (design D2 lines). Add
       `common:<name> schema:domainIncludes machine:Machine .` in the "Cross-cutting property
       domain extensions" section.
-- [ ] 5.3 Replaces this repo's `checklists` slice. `ControlChecklistPropertyTest`: the IRI is
+- [x] 5.3 Replaces this repo's `checklists` slice. `ControlChecklistPropertyTest`: the IRI is
       `common#controlChecklist`, the range `common#ChecklistTemplateEntry`, and
       `CommonPropertyDefinition.getPropertyType` = `CHECKLIST`. Delete `machine:controlChecklist`
       and its "until commons has a shared controlChecklist term" comment (machine-base.ttl:334-345).
       Add the opt-in. Archive `openspec/changes/checklists` as superseded.
-- [ ] 5.4 `README.md` opt-in paragraph (~line 90): list the shared properties.
-- [ ] 5.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
+- [x] 5.4 `README.md` opt-in paragraph (~line 90): list the shared properties.
+- [x] 5.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
 
 ### Group 6: sirk-orgadmin-backend — bump all five in one commit
 
@@ -131,9 +131,9 @@ in `CategoryPropertyInheritanceService.convertToPropertyType` (design D6 step 3)
 Files: `pom.xml` (only the five taxonomy versions, lines ~214-240).
 Tests: `mvnq test -Dtest='CategoryPropertyInheritanceServiceTest,CategoryInheritancePinTest,CategoryServiceTest'`
 
-- [ ] 6.1 Set `taxonomy-commons` and the four domain versions to the tags from Groups 1–5, in
+- [x] 6.1 Set `taxonomy-commons` and the four domain versions to the tags from Groups 1–5, in
       one commit.
-- [ ] 6.2 Run the tests above, then the full suite once. A failing type assertion for logistics
+- [x] 6.2 Run the tests above, then the full suite once. A failing type assertion for logistics
       `Freight.weight`/`volume` is expected: they become `DECIMAL_KG`/`DECIMAL_M3` (design D4,
       PO-approved). Update that test expectation; do not change Java.
 
@@ -145,8 +145,8 @@ Files: `pom.xml` (only the `*-taxonomy.version` and `taxonomy-commons.version` p
 ~30-34).
 Tests: `mvnq test`
 
-- [ ] 7.1 Set the five versions to the tags from Groups 1–5, in one commit.
-- [ ] 7.2 Run `mvnq test` once.
+- [x] 7.1 Set the five versions to the tags from Groups 1–5, in one commit.
+- [x] 7.2 Run `mvnq test` once.
 
 ## Not in scope
 
