@@ -20,6 +20,12 @@ class CommonPropertyDefinitionTest {
     }
 
     @Test
+    void mapsChecklistTemplateEntryToChecklist() {
+        assertEquals(PropertyType.CHECKLIST,
+                getPropertyType(withRange("controlChecklist", "http://taxonomy.sirktek.no/common#ChecklistTemplateEntry")));
+    }
+
+    @Test
     void mapsDepreciationGroupEnumeration() {
         assertEquals(PropertyType.DEPRECIATION_GROUP,
                 getPropertyType(withRange("depreciationGroup", "http://taxonomy.sirktek.no/common#DepreciationGroup")));
