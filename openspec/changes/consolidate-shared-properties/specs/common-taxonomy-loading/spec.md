@@ -6,13 +6,19 @@ Commons SHALL declare `common:color`, `common:material`, `common:variant`, `comm
 (`xsd:string`), `common:model` (range `common:Model`), `common:operationsAndMaintenanceManual`
 (`xsd:anyURI`), `common:length`, `common:width`, `common:height`, `common:weight` and
 `common:volume` (`xsd:decimal`), each with an English and a Norwegian label and without
-`rdfs:domain` or `schema:domainIncludes`. `common:manufacturer` SHALL name `common:Model` with
+`rdfs:domain` or `schema:domainIncludes`. Commons SHALL declare `common:controlChecklist` with
+range `common:ChecklistTemplateEntry`, labels "Checklist"@en and "Sjekkliste"@no, and no domain.
+`common:manufacturer` SHALL name `common:Model` with
 `schema:domainIncludes`, not `rdfs:domain`. A domain taxonomy SHALL attach these properties to its
 classes with `schema:domainIncludes` and SHALL NOT declare a property with the same local name.
 
 #### Scenario: Shared property declaration
 - **WHEN** the commons model is read
 - **THEN** `common:weight` has range `xsd:decimal`, labels "Weight (kg)"@en and "Vekt (kg)"@no, and neither `rdfs:domain` nor `schema:domainIncludes`
+
+#### Scenario: Checklist property declared once in commons
+- **WHEN** the commons model is read
+- **THEN** `common:controlChecklist` has range `common:ChecklistTemplateEntry`, labels "Checklist"@en and "Sjekkliste"@no, and neither `rdfs:domain` nor `schema:domainIncludes`
 
 #### Scenario: Shared property attaches without a key clash
 - **WHEN** a domain Turtle file states `common:weight schema:domainIncludes d:TestBuilding` and its loader loads it

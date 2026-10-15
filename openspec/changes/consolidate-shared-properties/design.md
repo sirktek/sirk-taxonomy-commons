@@ -26,7 +26,7 @@ the second precedent.
 | Kind | Item | Reader in this change |
 | --- | --- | --- |
 | TTL (commons) | `common:color`, `material`, `variant`, `serialNumber`, `model`, `operationsAndMaintenanceManual`, `length`, `width`, `height`, `weight`, `volume` | domain opt-ins (Groups 2–5) |
-| TTL (commons) | `common:controlChecklist` (range `common:ChecklistTemplateEntry`), **pending PO OK** | logistics and machine opt-ins (Groups 4, 5) |
+| TTL (commons) | `common:controlChecklist` (range `common:ChecklistTemplateEntry`) | logistics and machine opt-ins (Groups 4, 5) |
 | TTL (commons), changed | `common:manufacturer`: `rdfs:domain common:Model` becomes `schema:domainIncludes common:Model`; adds `skos:altLabel "Vendor"@en` (moved from ict) | ict and machine opt-ins; mcp-server serves the raw TTL |
 | TTL (domains), removed | 11 `furniture:*`, 3 `ict:*`, 2 or 3 `logistics:*`, 12 or 13 `machine:*` declarations (D2 table) | — |
 | TTL (domains) | `schema:domainIncludes` opt-in triples, one per name and class | loader |
@@ -140,7 +140,7 @@ four frontends: only the model record).
   only hit is a hand-built fixture, `CategoryServiceTest.java:428` (`furniture#width`), which does
   not load the taxonomy. The frontends contain no `taxonomy.sirktek.no/` string outside tests. The
   one IRI reader is orgadmin's namespace routing (D4).
-- **`controlChecklist`** (pending PO OK): one `common:controlChecklist` with range
+- **`controlChecklist`** (PO OK 2026-10-15): one `common:controlChecklist` with range
   `common:ChecklistTemplateEntry`, label "Checklist"@en, "Sjekkliste"@no, and comment "The checks
   to perform on the asset on each visit of a control round: one ChecklistTemplate v1 (see
   ChecklistTemplateEntry). Set on a category it is the default for every asset in that category;
@@ -180,14 +180,14 @@ Nothing else pins these artifacts (grep of `pom.xml` under ~/dev:
   uses that marker as a range. It does not redo the marker or the mapping, and it runs after
   commons `checklists` Group 1.
 - The logistics and machine `checklists` slices change the range of their own `controlChecklist`.
-  If the PO OKs D5, Groups 4 and 5 here replace those slices: the declaration is deleted, and the
+  Groups 4 and 5 here replace those slices: the declaration is deleted, and the
   opt-in reaches `common:controlChecklist`, which already has the marker range. The slices'
   test assertions (range and `CHECKLIST` type) move into Groups 4 and 5. Archive those slices as
   superseded.
-- If the PO says no, skip tasks 1.3, 4.3 and 5.3, and run the domain `checklists` slices on the
-  same branch as Groups 4 and 5. Either way each domain releases once.
-- The commons `checklists` proposal's non-goal "a shared `common:controlChecklist`" is answered
-  here. No edit to that change is needed.
+  Each domain releases once.
+- The commons `checklists` proposal's non-goal "a shared `common:controlChecklist`" and its
+  2026-10-15 "no" are reversed by the PO the same day; that proposal records the reversal and
+  points here.
 
 ## Commons TTL (Group 1)
 
@@ -250,7 +250,7 @@ common:volume a rdf:Property ;
     rdfs:range xsd:decimal .
 ```
 
-With PO OK, also (D5 text):
+Also (D5 text):
 
 ```turtle
 common:controlChecklist a rdf:Property ;
@@ -280,10 +280,10 @@ opt-ins:
 - **furniture:** `common:<n> schema:domainIncludes furniture:Furniture .` for the eleven names.
 - **ict:** `common:manufacturer` and `common:model` `schema:domainIncludes ict:Hardware, ict:Software`;
   `common:serialNumber schema:domainIncludes ict:Hardware`.
-- **logistics:** `common:weight`, `common:volume` `schema:domainIncludes logistics:Freight`; with
-  PO OK `common:controlChecklist schema:domainIncludes logistics:ControlPoint`.
+- **logistics:** `common:weight`, `common:volume` `schema:domainIncludes logistics:Freight`; and
+  `common:controlChecklist schema:domainIncludes logistics:ControlPoint`.
 - **machine:** the eleven names and `common:manufacturer` `schema:domainIncludes machine:Machine`;
-  with PO OK `common:controlChecklist schema:domainIncludes machine:Machine`, and delete the
+  `common:controlChecklist schema:domainIncludes machine:Machine`, and delete the
   "until commons has a shared controlChecklist term" comment (machine-base.ttl:334-338).
 
 Each domain README gets one line in its opt-in paragraph that names the consolidated properties.
@@ -295,6 +295,5 @@ Each domain README gets one line in its opt-in paragraph that names the consolid
   which is undeclared there (no `rdf:type rdf:Property`). The property then disappears from the
   class (`getPropertiesForClass` lists only typed properties). Mitigation: D6 step 3, all five
   versions in one commit.
-- **Freight weight/volume type:** reported as `DECIMAL_KG`/`DECIMAL_M3` (D4); proposal open
-  question 2.
-- **`controlChecklist` without PO OK:** handled by D7's fallback; no release is added.
+- **Freight weight/volume type:** reported as `DECIMAL_KG`/`DECIMAL_M3` (D4); PO-approved
+  2026-10-15.

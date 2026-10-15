@@ -17,9 +17,6 @@ every name, range and label, and D7 covers the `checklists` interplay.
 Order: Group 1 merges first. Groups 2–5 follow in any order, each one merge. Groups 6 and 7
 come last, after all of Groups 2–5 have released.
 
-**Tasks marked (PO)** depend on the `controlChecklist` OK (proposal open question 1). Without it,
-skip them and follow design D7's fallback.
-
 ### Group 1: sirk-taxonomy-commons — declare the shared terms
 
 Prerequisite: commons `checklists` Group 1 merged (`common:ChecklistTemplateEntry` exists).
@@ -42,7 +39,7 @@ Tests: `mvnq test -Dtest='CommonTaxonomyServiceTest,DomainOptInLoaderTest'`
       is `common#weight`. See them fail.
 - [ ] 1.2 `common-base.ttl`: add the "Shared asset properties" section (design "Commons TTL")
       after `common:resourceVariant`, and rewrite `common:manufacturer` as shown there.
-- [ ] 1.3 (PO) Add `common:controlChecklist` (design D5 text) to the same section. In 1.1, assert
+- [ ] 1.3 Add `common:controlChecklist` (design D5 text) to the same section. In 1.1, assert
       its range `common:ChecklistTemplateEntry`, its labels "Checklist"/"Sjekkliste" and no domain.
 - [ ] 1.4 `README.md`: a "Shared asset properties" table (property, label (no), range) next to
       "Commercial terms". Note that domains opt in and that `address` stays per domain (D3).
@@ -95,21 +92,21 @@ Tests: `mvnq test -Dtest='CommonPropertyOptInTest,TaxonomyServiceTest,PropertyDe
       keeps the IRI `logistics#address`. Delete `logistics:weight` and `logistics:volume`
       (logistics-base.ttl:371, 377). Add `common:weight` and `common:volume`
       `schema:domainIncludes logistics:Freight` next to the existing opt-ins (~line 226).
-- [ ] 4.3 (PO) Replaces this repo's `checklists` slice. In `TaxonomyServiceTest` (~129-137) and
+- [ ] 4.3 Replaces this repo's `checklists` slice. In `TaxonomyServiceTest` (~129-137) and
       the opt-in test, `ControlPoint` carries `controlChecklist` once, with IRI
       `common#controlChecklist`, range `common#ChecklistTemplateEntry`, labels unchanged, and
       `CommonPropertyDefinition.getPropertyType` = `CHECKLIST`. Delete `logistics:controlChecklist`
       (line 260) and add `common:controlChecklist schema:domainIncludes logistics:ControlPoint`.
       Archive `openspec/changes/checklists` as superseded.
-- [ ] 4.4 `README.md` opt-in paragraph (~line 93): list `weight` and `volume` (and
-      `controlChecklist` with 4.3).
+- [ ] 4.4 `README.md` opt-in paragraph (~line 93): list `weight` and `volume` and
+      `controlChecklist`.
 - [ ] 4.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
 
 ### Group 5: sirk-machine-taxonomy
 
 Files: `src/main/resources/taxonomy/machine-base.ttl`, `pom.xml` (only the `taxonomy-commons`
 version), `src/test/java/no/sirktek/taxonomy/CommonPropertyOptInTest.java`,
-`src/test/java/no/sirktek/taxonomy/ControlChecklistPropertyTest.java` (only with 5.3), `README.md`.
+`src/test/java/no/sirktek/taxonomy/ControlChecklistPropertyTest.java`, `README.md`.
 Tests: `mvnq test -Dtest='CommonPropertyOptInTest,ControlChecklistPropertyTest,TaxonomyServiceTest,PropertyDefinitionTest'`
 
 - [ ] 5.1 Bump `taxonomy-commons` to Group 1's tag.
@@ -118,7 +115,7 @@ Tests: `mvnq test -Dtest='CommonPropertyOptInTest,ControlChecklistPropertyTest,T
       assertions stay. Delete the twelve `machine:*` declarations (design D2 lines). Add
       `common:<name> schema:domainIncludes machine:Machine .` in the "Cross-cutting property
       domain extensions" section.
-- [ ] 5.3 (PO) Replaces this repo's `checklists` slice. `ControlChecklistPropertyTest`: the IRI is
+- [ ] 5.3 Replaces this repo's `checklists` slice. `ControlChecklistPropertyTest`: the IRI is
       `common#controlChecklist`, the range `common#ChecklistTemplateEntry`, and
       `CommonPropertyDefinition.getPropertyType` = `CHECKLIST`. Delete `machine:controlChecklist`
       and its "until commons has a shared controlChecklist term" comment (machine-base.ttl:334-345).
@@ -137,8 +134,8 @@ Tests: `mvnq test -Dtest='CategoryPropertyInheritanceServiceTest,CategoryInherit
 - [ ] 6.1 Set `taxonomy-commons` and the four domain versions to the tags from Groups 1–5, in
       one commit.
 - [ ] 6.2 Run the tests above, then the full suite once. A failing type assertion for logistics
-      `Freight.weight`/`volume` is expected (`DECIMAL_KG`/`DECIMAL_M3`, design D4). Report it in
-      the handoff; do not change Java.
+      `Freight.weight`/`volume` is expected: they become `DECIMAL_KG`/`DECIMAL_M3` (design D4,
+      PO-approved). Update that test expectation; do not change Java.
 
 ### Group 7: sirk-mcp-server — bump all five in one commit
 

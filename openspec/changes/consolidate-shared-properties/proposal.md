@@ -18,16 +18,15 @@ Local names, and so every stored value, stay the same. The change is to taxonomy
 - **Commons (`common-base.ttl`):** eleven new properties with no domain: `color`, `material`,
   `variant`, `serialNumber`, `model`, `operationsAndMaintenanceManual`, `length`, `width`,
   `height`, `weight`, `volume`. `controlChecklist` is a twelfth, with range
-  `common:ChecklistTemplateEntry`, if the product owner OKs it (see open questions).
+  `common:ChecklistTemplateEntry` (decided 2026-10-15, see below).
   `common:manufacturer` gets `schema:domainIncludes common:Model` in place of
   `rdfs:domain common:Model` and takes ict's `skos:altLabel "Vendor"@en`.
 - **Domains:** each deletes its own declaration of these names and opts its classes in with
   `schema:domainIncludes`:
   - furniture: `Furniture`, all eleven new names
   - ict: `Hardware`/`Software` for `manufacturer` and `model`, `Hardware` for `serialNumber`
-  - logistics: `Freight` for `weight` and `volume`, plus `ControlPoint` for `controlChecklist` if
-    OK'd
-  - machine: `Machine`, all eleven new names and `manufacturer`, plus `controlChecklist` if OK'd
+  - logistics: `Freight` for `weight` and `volume`, plus `ControlPoint` for `controlChecklist`
+  - machine: `Machine`, all eleven new names and `manufacturer`, plus `controlChecklist`
 - **Consumers:** sirk-orgadmin-backend and sirk-mcp-server bump commons and all four domains in a
   single commit. They need no code change.
 - **Stays split:** `address`. `logistics:address` is a location's address, typed `ADDRESS`
@@ -62,14 +61,14 @@ emits two definitions with the same key here.
   (`furniture-base.ttl:240,271`). They are inert today because the commons loader never reads
   furniture's TTL.
 
-## Open questions for the product owner
+## Decisions
 
-1. **`controlChecklist` into commons?** On 2026-10-15 you said no in the commons `checklists`
-   proposal, because "Vardly and stored data already use `controlChecklist`". The local name
-   stays `controlChecklist`, so stored values and Vardly are unaffected. Only the IRI changes
-   (`logistics:`/`machine:` to `common:`), and nothing reads it (design D5). This design includes
-   it, pending your explicit OK. If you say no, drop tasks 1.3, 4.3 and 5.3 and run the domain
-   `checklists` slices as written, on the same branches (design D7).
-2. **Freight weight/volume as kg/m³:** after the change, orgadmin types them `DECIMAL_KG` and
-   `DECIMAL_M3`, like furniture and machine, instead of plain `DECIMAL`. Is that acceptable? The
-   alternative is keeping them split, which keeps the redeclaration.
+Decided by the product owner on 2026-10-15:
+
+1. **`controlChecklist` moves into commons.** This reverses the "no" recorded earlier the same
+   day in the commons `checklists` proposal. The local name stays `controlChecklist`, so stored
+   values and Vardly are unaffected; only the IRI changes (`logistics:`/`machine:` to `common:`),
+   and nothing reads it (design D5). Groups 4 and 5 replace the logistics and machine
+   `checklists` slices (design D7).
+2. **Freight weight/volume become kg/m³:** orgadmin types logistics `Freight.weight`/`volume`
+   `DECIMAL_KG`/`DECIMAL_M3`, like furniture and machine, instead of plain `DECIMAL`.

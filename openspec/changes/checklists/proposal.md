@@ -38,15 +38,17 @@ sirk-orgadmin-backend validates `CHECKLIST` values in its `checklists` change.
 
 ## Non-goals
 
-- A shared `common:controlChecklist` term replacing the two domain declarations (see open
-  questions).
+- A shared `common:controlChecklist` term replacing the two domain declarations. It comes in
+  `consolidate-shared-properties` (see open questions).
 - Field-level properties for the template (`key`, `text`, …). The contract lives in the canonical
   design; the marker's comment points to it, as `AssetValuationEntry`'s does.
 
 ## Open questions for the product owner
 
-Decided 2026-10-15: **no.** Keep the two domain declarations; Vardly and stored data already use
-`controlChecklist` and `machine:controlChecklist`.
+Decided 2026-10-15: **no**, then reversed the same day: **yes**, in
+`consolidate-shared-properties`. That change declares `common:controlChecklist` with range
+`common:ChecklistTemplateEntry`; its logistics and machine groups replace this change's domain
+slices. The stored key stays `controlChecklist`.
 
 - **One shared `common:controlChecklist`?** machine-base.ttl says `machine:controlChecklist` is
   "declared in the machine namespace until commons has a shared controlChecklist term". Declaring
