@@ -6,7 +6,7 @@ package no.sirktek.taxonomy.model;
  *
  * Only the cross-cutting property ranges are mapped here — the *Entry
  * markers (EmissionEntry, ConsistsOfEntry, EnergySourceEntry,
- * AllocationEntry, AssetValuationEntry) and the DepreciationGroup
+ * AllocationEntry, AssetValuationEntry, ChecklistTemplateEntry) and the DepreciationGroup
  * enumeration. Domain taxonomies
  * (FurniturePropertyDefinition, LogisticsPropertyDefinition,
  * MachinePropertyDefinition) handle their own xsd-* and domain-specific
@@ -31,6 +31,7 @@ public class CommonPropertyDefinition {
             case "http://taxonomy.sirktek.no/common#EnergySourceEntry"  -> PropertyType.ENERGY_MIX;
             case "http://taxonomy.sirktek.no/common#AllocationEntry"    -> PropertyType.ALLOCATIONS;
             case "http://taxonomy.sirktek.no/common#AssetValuationEntry" -> PropertyType.ASSET_VALUATIONS;
+            case "http://taxonomy.sirktek.no/common#ChecklistTemplateEntry" -> PropertyType.CHECKLIST;
             case "http://taxonomy.sirktek.no/common#DepreciationGroup"  -> PropertyType.DEPRECIATION_GROUP;
             default -> null;
         };
@@ -61,6 +62,8 @@ public class CommonPropertyDefinition {
          * {@link PropertyDefinition#enumValues()} and filter on
          * {@link EnumValue#jurisdiction()} (Norwegian saldogruppe a–j are "NO").
          */
-        DEPRECIATION_GROUP
+        DEPRECIATION_GROUP,
+        /** One ChecklistTemplate v1, stored as a JSON string ({@code ChecklistTemplateEntry}). */
+        CHECKLIST
     }
 }

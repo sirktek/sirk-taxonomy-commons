@@ -21,10 +21,10 @@ Files: `src/main/resources/taxonomy/common-base.ttl`,
 `src/test/java/no/sirktek/taxonomy/CommonTaxonomyServiceTest.java` (only if a class count changes).
 Tests: `mvnq test -Dtest='CommonPropertyDefinitionTest,CommonTaxonomyServiceTest'`
 
-- [ ] 1.1 Test first: `mapsChecklistTemplateEntryToChecklist` in `CommonPropertyDefinitionTest`
+- [x] 1.1 Test first: `mapsChecklistTemplateEntryToChecklist` in `CommonPropertyDefinitionTest`
       (range `http://taxonomy.sirktek.no/common#ChecklistTemplateEntry` → `CHECKLIST`). See it fail.
-- [ ] 1.2 Add the class to `common-base.ttl` exactly as design C1, after `AssetValuationEntry`.
-- [ ] 1.3 Add the mapping and the enum constant (design C2); update the class javadoc's marker list.
-- [ ] 1.4 Run the tests above, then `mvnq test` once, and `openspec validate checklists --strict`.
+- [x] 1.2 Add the class to `common-base.ttl` exactly as design C1, after `AssetValuationEntry`.
+- [x] 1.3 Add the mapping and the enum constant (design C2); update the class javadoc's marker list.
+- [x] 1.4 Run the tests above, then `mvnq test` once, and `openspec validate checklists --strict`.
       Merge releases `3.<build>`; note the released version in the handoff, because
       sirk-logistics-taxonomy, sirk-machine-taxonomy and sirk-orgadmin-backend bump to it.

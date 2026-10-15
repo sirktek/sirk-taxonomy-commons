@@ -60,6 +60,10 @@ common:AssetValuationEntry a rdfs:Class ;
     rdfs:label "Asset Valuation Entry"@en ;
     rdfs:comment "The values of one asset at the end of one fiscal year: year (integer, the year the fiscal year ends), bookValue (carrying amount after accounting depreciation), taxValue (tax written-down value, saldoverdi), wealthValue (formuesverdi, Norway only). Amounts are decimals in NOK; every field but year is optional. Same names and shape as ledger17's acct:AssetValuation"@en .
 
+common:ChecklistTemplateEntry a rdfs:Class ;
+    rdfs:label "Checklist Template"@en, "Sjekkliste"@no ;
+    rdfs:comment "One JSON-encoded ChecklistTemplate v1 (the cross-repo checklists contract, sirk-service-backend openspec/changes/checklists): {version: 1, items: [{key, text, guidance, required, responseType}]} with 1-100 items; key matches ^[a-z0-9][a-z0-9_-]{0,63}$ and is unique; text is non-blank and at most 500 characters after trim; guidance is optional and at most 2000; required is true or false; responseType is CHECK. A property with this range holds the whole template as one JSON string"@en .
+
 # -------------------------------------------------------------------
 # Manufacturer properties
 # -------------------------------------------------------------------
