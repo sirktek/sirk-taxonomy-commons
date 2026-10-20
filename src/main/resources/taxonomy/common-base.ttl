@@ -26,6 +26,10 @@ common:Model a rdfs:Class ;
     rdfs:label "Model"@en, "Modell"@no ;
     rdfs:comment "Specific product model produced by a manufacturer"@en .
 
+common:Department a rdfs:Class ;
+    rdfs:label "Department"@en, "Avdeling"@no ;
+    rdfs:comment "Organizational department; departments nest by sub-categorisation"@en .
+
 common:Resource a rdfs:Class ;
     rdfs:label "Resource"@en, "Ressurs"@no ;
     rdfs:comment "Material or resource consumed in producing a product (LCA input side)"@en .
@@ -86,6 +90,13 @@ common:homepage a rdf:Property ;
 # -------------------------------------------------------------------
 # Model properties
 # -------------------------------------------------------------------
+
+common:location a rdf:Property ;
+    rdfs:label "Locations"@en, "Lokasjoner"@no ;
+    rdfs:comment "Locations this department works at (multi-select of logistics:Location categories). Several departments may share a location"@en ;
+    rdfs:domain common:Department ;
+    rdfs:range <http://taxonomy.sirktek.no/logistics#Location> ;
+    common:multiValued true .
 
 common:manufacturer a rdf:Property ;
     rdfs:label "Manufacturer"@en, "Produsent"@no ;
