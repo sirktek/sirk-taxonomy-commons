@@ -139,13 +139,6 @@ common:consistsOf a rdf:Property ;
     schema:domainIncludes common:Resource ;
     rdfs:range common:ConsistsOfEntry .
 
-common:resourceVariant a rdf:Property ;
-    rdfs:label "Resource Variant"@en, "Ressursvariant"@no ;
-    rdfs:comment "Sensitivity / scenario variant applied to a resource value (Baseline, +20%, -20%)"@en ;
-    schema:domainIncludes common:Model ;
-    schema:domainIncludes common:Resource ;
-    rdfs:range common:ResourceVariant .
-
 # -------------------------------------------------------------------
 # Shared asset properties
 #
