@@ -72,6 +72,23 @@ class CommonTaxonomyServiceTest {
     }
 
     @Test
+    void departmentIsARootClassWithOnlyAMultiValuedLocationProperty() {
+        CategoryInfo dept = taxonomyService.getCategoryByClassName("Department").orElseThrow();
+
+        assertEquals("Department", dept.englishName());
+        assertEquals("Avdeling", dept.norwegianName());
+        assertNull(dept.parentClassName());
+        assertEquals(1, dept.properties().size());
+        PropertyDefinition location = dept.properties().get(0);
+        assertEquals("location", location.name());
+        assertEquals("Locations", location.englishLabel());
+        assertEquals("Lokasjoner", location.norwegianLabel());
+        assertEquals("http://taxonomy.sirktek.no/logistics#Location", location.rangeType());
+        assertTrue(location.multiValued());
+        assertTrue(location.enumValues().isEmpty());
+    }
+
+    @Test
     void manufacturerHasExpectedProperties() {
         Optional<CategoryInfo> manufacturer = taxonomyService.getCategoryByClassName("Manufacturer");
 
