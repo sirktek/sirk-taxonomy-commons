@@ -128,6 +128,18 @@ common:resourceType a rdf:Property ;
     rdfs:domain common:Resource ;
     rdfs:range xsd:string .
 
+common:massPerUnit a rdf:Property ;
+    rdfs:label "Mass per unit (kg)"@en, "Masse per enhet (kg)"@no ;
+    rdfs:comment "Mass in kilograms of one unit of this resource, the unit being the one stated by common:unit"@en ;
+    rdfs:domain common:Resource ;
+    rdfs:range xsd:decimal .
+
+common:renewableContent a rdf:Property ;
+    rdfs:label "Renewable content (%)"@en, "Fornybart innhold (%)"@no ;
+    rdfs:comment "Share of this resource's mass that is renewable material, in percent (ISO 59020 A.2.4 average percent renewable content of an inflow)"@en ;
+    rdfs:domain common:Resource ;
+    rdfs:range xsd:decimal .
+
 # -------------------------------------------------------------------
 # Cross-cutting LCA properties
 #
