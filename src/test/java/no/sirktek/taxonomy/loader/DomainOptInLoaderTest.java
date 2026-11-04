@@ -35,10 +35,17 @@ class DomainOptInLoaderTest {
 
     @Test
     void optedInCommonsPropertyAttachesNextToOwnPropertiesAndUnoptedStaysAbsent() {
-        assertEquals(Set.of("floors", "depreciationGroup", "valuations", "marketValue", "weight"), props.keySet());
+        assertEquals(Set.of("floors", "depreciationGroup", "valuations", "marketValue", "weight", "condition"),
+                props.keySet());
         PropertyDefinition dg = props.get("depreciationGroup");
         assertEquals("http://taxonomy.sirktek.no/common#depreciationGroup", dg.uri());
         assertNull(dg.domainClass());
+    }
+
+    @Test
+    void conditionGradesRunFromBestToWorstBySkosNotation() {
+        assertEquals(List.of("New", "LikeNew", "Good", "Worn", "NeedsRepair"),
+                props.get("condition").enumValues().stream().map(EnumValue::name).toList());
     }
 
     @Test
