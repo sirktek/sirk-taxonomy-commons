@@ -19,3 +19,4 @@ common:depreciationGroup schema:domainIncludes testdomain:TestBuilding .
 common:valuations schema:domainIncludes testdomain:TestBuilding .
 common:marketValue schema:domainIncludes testdomain:TestBuilding .
 common:weight schema:domainIncludes testdomain:TestBuilding .
+common:condition schema:domainIncludes testdomain:TestBuilding .

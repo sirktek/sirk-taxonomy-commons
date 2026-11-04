@@ -228,28 +228,34 @@ common:condition a rdf:Property ;
     rdfs:range common:Condition .
 
 # Condition grades (as individual instances, like common:DepreciationGroup).
-# The stored value is the local name, e.g. "Good".
+# The stored value is the local name, e.g. "Good"; skos:notation gives the
+# order from best to worst, which the loader sorts options by.
 common:Condition a rdfs:Class ;
     rdfs:label "Condition"@en, "Tilstand"@no ;
     rdfs:comment "Enumeration of physical condition grades, from unused to in need of repair"@en .
 
 common:New a common:Condition ;
+    skos:notation "1" ;
     rdfs:label "New"@en, "Ny"@no ;
     rdfs:comment "Unused"@en .
 
 common:LikeNew a common:Condition ;
+    skos:notation "2" ;
     rdfs:label "Like new"@en, "Som ny"@no ;
     rdfs:comment "Used, with no visible wear"@en .
 
 common:Good a common:Condition ;
+    skos:notation "3" ;
     rdfs:label "Good"@en, "God"@no ;
     rdfs:comment "Normal wear, fully functional"@en .
 
 common:Worn a common:Condition ;
+    skos:notation "4" ;
     rdfs:label "Worn"@en, "Slitt"@no ;
     rdfs:comment "Clearly worn, still functional"@en .
 
 common:NeedsRepair a common:Condition ;
+    skos:notation "5" ;
     rdfs:label "Needs repair"@en, "Trenger reparasjon"@no ;
     rdfs:comment "Must be repaired before it can be used"@en .
 
