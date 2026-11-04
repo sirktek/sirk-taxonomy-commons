@@ -222,6 +222,37 @@ common:controlChecklist a rdf:Property ;
     rdfs:comment "The checks to perform on the asset on each visit of a control round: one ChecklistTemplate v1 (see ChecklistTemplateEntry). Set on a category it is the default for every asset in that category; set on an asset it replaces the category default"@en ;
     rdfs:range common:ChecklistTemplateEntry .
 
+common:condition a rdf:Property ;
+    rdfs:label "Condition"@en, "Tilstand"@no ;
+    rdfs:comment "The physical condition of the item, one of the common:Condition grades. Not its lifecycle status (provisioned, in use, in transport, in service), which the asset carries outside the taxonomy"@en ;
+    rdfs:range common:Condition .
+
+# Condition grades (as individual instances, like common:DepreciationGroup).
+# The stored value is the local name, e.g. "Good".
+common:Condition a rdfs:Class ;
+    rdfs:label "Condition"@en, "Tilstand"@no ;
+    rdfs:comment "Enumeration of physical condition grades, from unused to in need of repair"@en .
+
+common:New a common:Condition ;
+    rdfs:label "New"@en, "Ny"@no ;
+    rdfs:comment "Unused"@en .
+
+common:LikeNew a common:Condition ;
+    rdfs:label "Like new"@en, "Som ny"@no ;
+    rdfs:comment "Used, with no visible wear"@en .
+
+common:Good a common:Condition ;
+    rdfs:label "Good"@en, "God"@no ;
+    rdfs:comment "Normal wear, fully functional"@en .
+
+common:Worn a common:Condition ;
+    rdfs:label "Worn"@en, "Slitt"@no ;
+    rdfs:comment "Clearly worn, still functional"@en .
+
+common:NeedsRepair a common:Condition ;
+    rdfs:label "Needs repair"@en, "Trenger reparasjon"@no ;
+    rdfs:comment "Must be repaired before it can be used"@en .
+
 # -------------------------------------------------------------------
 # Cross-cutting financial properties
 #
