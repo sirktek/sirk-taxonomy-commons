@@ -169,7 +169,7 @@ Tests: `yarn test --silent 2>&1 | tail -n 40`
 - [x] 8.1 Rename fixtures and test expectations first; see them fail.
 - [x] 8.2 `FACT_KEYS` `'builtYear'` → `'yearOfManufacture'`; rename the i18n keys per design D5,
       keeping the "Built year"/"Byggeår" wording.
-- [ ] 8.3 Run the tests. Deploy with or right after Group 6.
+- [x] 8.3 Run the tests. Deploy with or right after Group 6.
 
 ### Group 9: sirk-asset-frontend — follow the renamed keys
 
