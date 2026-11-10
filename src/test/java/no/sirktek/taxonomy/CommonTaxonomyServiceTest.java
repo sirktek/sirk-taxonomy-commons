@@ -214,8 +214,8 @@ class CommonTaxonomyServiceTest {
         for (Term t : List.of(
                 new Term("marketValue", "decimal", "Market value", "Markedsverdi"),
                 new Term("marketValueDate", "date", "Valuation date", "Verdsettelsesdato"),
-                new Term("monthlyRent", "decimal", "Monthly rent (excl. VAT)", "Månedsleie (eks. mva)"),
-                new Term("monthlyServiceCharge", "decimal", "Monthly service charge (excl. VAT)",
+                new Term("monthlyRentExVAT", "decimal", "Monthly rent (excl. VAT)", "Månedsleie (eks. mva)"),
+                new Term("monthlyServiceChargeExVAT", "decimal", "Monthly service charge (excl. VAT)",
                         "Felleskostnader per måned (eks. mva)"))) {
             Resource p = model.getResource(ns + t.name());
             assertEquals(xsd + t.range(), p.getRequiredProperty(RDFS.range).getResource().getURI(), t.name());
@@ -225,6 +225,28 @@ class CommonTaxonomyServiceTest {
             assertNull(p.getProperty(RDFS.domain), t.name());
             assertNull(p.getProperty(domainIncludes), t.name());
         }
+        for (String old : List.of("monthlyRent", "monthlyServiceCharge")) {
+            assertNull(model.getResource(ns + old).getProperty(RDF.type), old + " must be gone");
+        }
+    }
+
+    @Test
+    void newPriceIsACommercialTermOnModel() {
+        Model model = loadCommonModel();
+        String ns = "http://taxonomy.sirktek.no/common#";
+        Resource p = model.getResource(ns + "newPriceExVAT");
+        assertEquals("http://www.w3.org/2001/XMLSchema#decimal",
+                p.getRequiredProperty(RDFS.range).getResource().getURI());
+        assertEquals("New price (excl. VAT)", p.getProperty(RDFS.label, "en").getString());
+        assertEquals("Nypris (eks. mva)", p.getProperty(RDFS.label, "no").getString());
+        assertEquals("commercial", p.getRequiredProperty(model.createProperty(ns + "privateSet")).getString());
+        assertNull(p.getProperty(RDFS.domain));
+        assertEquals(ns + "Model", p.getRequiredProperty(model.createProperty("https://schema.org/domainIncludes"))
+                .getResource().getURI());
+
+        PropertyDefinition def = taxonomyService.getCategoryByClassName("Model").orElseThrow().properties().stream()
+                .filter(d -> d.name().equals("newPriceExVAT")).findFirst().orElseThrow();
+        assertEquals("commercial", def.privateSet());
     }
 
     @Test
@@ -249,6 +271,8 @@ class CommonTaxonomyServiceTest {
                 new Term("height", xsd + "decimal", "Height (cm)", "Høyde (cm)"),
                 new Term("weight", xsd + "decimal", "Weight (kg)", "Vekt (kg)"),
                 new Term("volume", xsd + "decimal", "Volume (m³)", "Volum (m³)"),
+                new Term("yearOfManufacture", xsd + "integer", "Year of manufacture", "Produksjonsår"),
+                new Term("installationYear", xsd + "integer", "Installation year", "Installasjonsår"),
                 new Term("controlChecklist", ns + "ChecklistTemplateEntry", "Checklist", "Sjekkliste"))) {
             Resource p = model.getResource(ns + t.name());
             assertEquals(t.range(), p.getRequiredProperty(RDFS.range).getResource().getURI(), t.name());
@@ -262,6 +286,10 @@ class CommonTaxonomyServiceTest {
         Resource manufacturer = model.getResource(ns + "manufacturer");
         assertEquals("Vendor", manufacturer.getProperty(
                 model.createProperty("http://www.w3.org/2004/02/skos/core#altLabel"), "en").getString());
+        Resource year = model.getResource(ns + "yearOfManufacture");
+        Property altLabel = model.createProperty("http://www.w3.org/2004/02/skos/core#altLabel");
+        assertEquals("Built year", year.getProperty(altLabel, "en").getString());
+        assertEquals("Byggeår", year.getProperty(altLabel, "no").getString());
         assertNull(manufacturer.getProperty(RDFS.domain));
         assertEquals(ns + "Model", manufacturer.getRequiredProperty(domainIncludes).getResource().getURI());
     }
@@ -272,7 +300,7 @@ class CommonTaxonomyServiceTest {
         collect(taxonomyService.loadBaseTaxonomy().rootCategories(), all);
         for (CategoryInfo c : all) {
             Set<String> names = c.properties().stream().map(p -> p.name()).collect(Collectors.toSet());
-            assertTrue(names.stream().noneMatch(n -> Set.of("weight", "color", "serialNumber").contains(n)),
+            assertTrue(names.stream().noneMatch(n -> Set.of("weight", "color", "serialNumber", "yearOfManufacture").contains(n)),
                     c.className() + " has " + names);
         }
     }

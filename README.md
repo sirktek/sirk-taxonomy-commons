@@ -85,8 +85,9 @@ Jurisdiction-neutral, `common:privateSet "commercial"`, no domain (domains opt i
 |----------|------------|-------|
 | `common:marketValue` | Markedsverdi | `xsd:decimal` |
 | `common:marketValueDate` | Verdsettelsesdato | `xsd:date` |
-| `common:monthlyRent` | Månedsleie (eks. mva) | `xsd:decimal` |
-| `common:monthlyServiceCharge` | Felleskostnader per måned (eks. mva) | `xsd:decimal` |
+| `common:newPriceExVAT` | Nypris (eks. mva); also `schema:domainIncludes common:Model` | `xsd:decimal` |
+| `common:monthlyRentExVAT` | Månedsleie (eks. mva) | `xsd:decimal` |
+| `common:monthlyServiceChargeExVAT` | Felleskostnader per måned (eks. mva) | `xsd:decimal` |
 
 ### Shared asset properties
 
@@ -101,6 +102,8 @@ it names `common:Model` with `schema:domainIncludes`, so a domain can attach it 
 | `common:variant` | Variant | `xsd:string` |
 | `common:color` | Farge | `xsd:string` |
 | `common:material` | Materiale | `xsd:string` |
+| `common:yearOfManufacture` | Produksjonsår (alt: Byggeår) | `xsd:integer` |
+| `common:installationYear` | Installasjonsår | `xsd:integer` |
 | `common:operationsAndMaintenanceManual` | Drift- og vedlikeholdshåndbok | `xsd:anyURI` |
 | `common:length` | Lengde (cm) | `xsd:decimal` |
 | `common:width` | Bredde (cm) | `xsd:decimal` |

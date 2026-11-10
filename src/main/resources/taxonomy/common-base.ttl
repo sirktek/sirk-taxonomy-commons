@@ -227,6 +227,17 @@ common:condition a rdf:Property ;
     rdfs:comment "The physical condition of the item, one of the common:Condition grades. Not its lifecycle status (provisioned, in use, in transport, in service), which the asset carries outside the taxonomy"@en ;
     rdfs:range common:Condition .
 
+common:yearOfManufacture a rdf:Property ;
+    rdfs:label "Year of manufacture"@en, "Produksjonsår"@no ;
+    skos:altLabel "Built year"@en, "Byggeår"@no ;
+    rdfs:comment "The year the item was manufactured or, for a building, built (four-digit year)"@en ;
+    rdfs:range xsd:integer .
+
+common:installationYear a rdf:Property ;
+    rdfs:label "Installation year"@en, "Installasjonsår"@no ;
+    rdfs:comment "The year the item was installed or put into use (four-digit year)"@en ;
+    rdfs:range xsd:integer .
+
 # Condition grades (as individual instances, like common:DepreciationGroup).
 # The stored value is the local name, e.g. "Good"; skos:notation gives the
 # order from best to worst, which the loader sorts options by.
@@ -425,7 +436,8 @@ common:DepreciationGroupJ a common:DepreciationGroup ;
 #
 # Private (privateSet "commercial"), jurisdiction-neutral terms of an
 # asset. No domain: domains opt in with schema:domainIncludes in their
-# own ttl. Amounts exclude VAT where stated.
+# own ttl. Amounts exclude VAT where stated. newPriceExVAT also names
+# common:Model, like common:emissionPerUnit.
 # -------------------------------------------------------------------
 
 common:marketValue a rdf:Property ;
@@ -440,13 +452,20 @@ common:marketValueDate a rdf:Property ;
     common:privateSet "commercial" ;
     rdfs:range xsd:date .
 
-common:monthlyRent a rdf:Property ;
+common:newPriceExVAT a rdf:Property ;
+    rdfs:label "New price (excl. VAT)"@en, "Nypris (eks. mva)"@no ;
+    rdfs:comment "Price of a new equivalent item in NOK, excluding VAT. Set on a category it applies to every item in that category"@en ;
+    common:privateSet "commercial" ;
+    schema:domainIncludes common:Model ;
+    rdfs:range xsd:decimal .
+
+common:monthlyRentExVAT a rdf:Property ;
     rdfs:label "Monthly rent (excl. VAT)"@en, "Månedsleie (eks. mva)"@no ;
     rdfs:comment "Monthly rent for the asset in NOK, excluding VAT"@en ;
     common:privateSet "commercial" ;
     rdfs:range xsd:decimal .
 
-common:monthlyServiceCharge a rdf:Property ;
+common:monthlyServiceChargeExVAT a rdf:Property ;
     rdfs:label "Monthly service charge (excl. VAT)"@en, "Felleskostnader per måned (eks. mva)"@no ;
     rdfs:comment "Monthly service charge (common costs) for the asset in NOK, excluding VAT"@en ;
     common:privateSet "commercial" ;
