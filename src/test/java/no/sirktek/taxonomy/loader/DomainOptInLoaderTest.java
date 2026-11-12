@@ -35,7 +35,7 @@ class DomainOptInLoaderTest {
 
     @Test
     void optedInCommonsPropertyAttachesNextToOwnPropertiesAndUnoptedStaysAbsent() {
-        assertEquals(Set.of("floors", "depreciationGroup", "valuations", "marketValue", "weight", "condition"),
+        assertEquals(Set.of("floors", "depreciationGroup", "valuations", "marketValue", "weight", "condition", "color"),
                 props.keySet());
         PropertyDefinition dg = props.get("depreciationGroup");
         assertEquals("http://taxonomy.sirktek.no/common#depreciationGroup", dg.uri());
@@ -46,6 +46,20 @@ class DomainOptInLoaderTest {
     void conditionGradesRunFromBestToWorstBySkosNotation() {
         assertEquals(List.of("New", "LikeNew", "Good", "Worn", "NeedsRepair"),
                 props.get("condition").enumValues().stream().map(EnumValue::name).toList());
+    }
+
+    @Test
+    void colorValuesRunInIsccNbsOrderWithSwatches() {
+        List<EnumValue> values = props.get("color").enumValues();
+        assertEquals(List.of("Pink", "Red", "Orange", "Brown", "Yellow", "Olive", "YellowGreen", "Green", "Blue",
+                "Purple", "White", "Gray", "Black", "Metallic", "Transparent", "Multicolored"),
+                values.stream().map(EnumValue::name).toList());
+        Map<String, EnumValue> byName = values.stream().collect(Collectors.toMap(EnumValue::name, v -> v));
+        assertEquals("Yellow green", byName.get("YellowGreen").englishLabel());
+        assertEquals("Gulgrønn", byName.get("YellowGreen").norwegianLabel());
+        assertEquals("#222222", byName.get("Black").attributes().get("swatch"));
+        assertFalse(byName.get("Transparent").attributes().containsKey("swatch"));
+        assertFalse(byName.get("Multicolored").attributes().containsKey("swatch"));
     }
 
     @Test
