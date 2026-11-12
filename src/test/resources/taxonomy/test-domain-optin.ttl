@@ -20,3 +20,4 @@ common:valuations schema:domainIncludes testdomain:TestBuilding .
 common:marketValue schema:domainIncludes testdomain:TestBuilding .
 common:weight schema:domainIncludes testdomain:TestBuilding .
 common:condition schema:domainIncludes testdomain:TestBuilding .
+common:color schema:domainIncludes testdomain:TestBuilding .

@@ -185,7 +185,8 @@ common:variant a rdf:Property ;
 
 common:color a rdf:Property ;
     rdfs:label "Color"@en, "Farge"@no ;
-    rdfs:range xsd:string .
+    rdfs:comment "Dominant colour of the item, one of common:Color. Use Multicolored when no single colour dominates."@en ;
+    rdfs:range common:Color .
 
 common:material a rdf:Property ;
     rdfs:label "Material"@en, "Materiale"@no ;
@@ -275,6 +276,94 @@ common:NeedsRepair a common:Condition ;
     rdfs:label "Needs repair"@en, "Trenger reparasjon"@no ;
     rdfs:comment "Must be repaired before it can be used"@en .
 
+# Colour (as individual instances, like common:Condition).
+# The stored value is the local name, e.g. "YellowGreen"; skos:notation gives the
+# ISCC–NBS Level 1 order, zero-padded so a string sort keeps it.
+common:Color a rdfs:Class ;
+    rdfs:label "Color"@en, "Farge"@no ;
+    rdfs:comment "The thirteen ISCC–NBS Level 1 colour categories (Kelly & Judd, NIST Special Publication 440, 1976), in their published order, plus three extras of our own (Metallic, Transparent, Multicolored) that are not ISCC–NBS categories."@en .
+
+common:Pink a common:Color ;
+    rdfs:label "Pink"@en, "Rosa"@no ;
+    skos:notation "01" ;
+    common:swatch "#ea9399" .
+
+common:Red a common:Color ;
+    rdfs:label "Red"@en, "Rød"@no ;
+    skos:notation "02" ;
+    common:swatch "#bc3f4a" .
+
+common:Orange a common:Color ;
+    rdfs:label "Orange"@en, "Oransje"@no ;
+    skos:notation "03" ;
+    common:swatch "#ed872d" .
+
+common:Brown a common:Color ;
+    rdfs:label "Brown"@en, "Brun"@no ;
+    skos:notation "04" ;
+    common:swatch "#80461b" .
+
+common:Yellow a common:Color ;
+    rdfs:label "Yellow"@en, "Gul"@no ;
+    skos:notation "05" ;
+    common:swatch "#d4af37" .
+
+common:Olive a common:Color ;
+    rdfs:label "Olive"@en, "Oliven"@no ;
+    skos:notation "06" ;
+    common:swatch "#665d1e" .
+
+common:YellowGreen a common:Color ;
+    rdfs:label "Yellow green"@en, "Gulgrønn"@no ;
+    skos:notation "07" ;
+    common:swatch "#7e9f2e" .
+
+common:Green a common:Color ;
+    rdfs:label "Green"@en, "Grønn"@no ;
+    skos:notation "08" ;
+    common:swatch "#007959" .
+
+common:Blue a common:Color ;
+    rdfs:label "Blue"@en, "Blå"@no ;
+    skos:notation "09" ;
+    common:swatch "#0067a5" .
+
+common:Purple a common:Color ;
+    rdfs:label "Purple"@en, "Lilla"@no ;
+    skos:notation "10" ;
+    common:swatch "#875692" .
+
+common:White a common:Color ;
+    rdfs:label "White"@en, "Hvit"@no ;
+    skos:notation "11" ;
+    common:swatch "#f2f3f4" .
+
+common:Gray a common:Color ;
+    rdfs:label "Gray"@en, "Grå"@no ;
+    skos:notation "12" ;
+    common:swatch "#848482" .
+
+common:Black a common:Color ;
+    rdfs:label "Black"@en, "Svart"@no ;
+    skos:notation "13" ;
+    common:swatch "#222222" .
+
+common:Metallic a common:Color ;
+    rdfs:label "Metallic"@en, "Metallisk"@no ;
+    rdfs:comment "Not an ISCC–NBS category. Polished or brushed metal whose apparent colour is mostly reflection."@en ;
+    skos:notation "14" ;
+    common:swatch "#c0c0c0" .
+
+common:Transparent a common:Color ;
+    rdfs:label "Transparent"@en, "Gjennomsiktig"@no ;
+    rdfs:comment "Not an ISCC–NBS category. Clear glass or plastic whose apparent colour is what lies behind it."@en ;
+    skos:notation "15" .
+
+common:Multicolored a common:Color ;
+    rdfs:label "Multicolored"@en, "Flerfarget"@no ;
+    rdfs:comment "Not an ISCC–NBS category. No single colour dominates, or the surface is patterned."@en ;
+    skos:notation "16" .
+
 # -------------------------------------------------------------------
 # Cross-cutting financial properties
 #
@@ -360,6 +449,11 @@ common:DepreciationGroup a rdfs:Class ;
     rdfs:label "Tax Depreciation Group"@en, "Saldogruppe"@no ;
     rdfs:comment "Enumeration of statutory tax depreciation classes, one set per jurisdiction (common:jurisdiction on each instance). Norwegian instances (saldogruppe a–j, skatteloven § 14-41) carry the maximum yearly rate per § 14-43 as common:depreciationRate (percent) and the statutory letter as skos:notation"@en ;
     rdfs:seeAlso <https://lovdata.no/lov/1999-03-26-14/§14-43> .
+
+common:swatch a rdf:Property ;
+    rdfs:label "Swatch"@en, "Fargeprøve"@no ;
+    rdfs:comment "Display hint: an sRGB colour, #rrggbb, that a client may draw beside the value. Not data — never stored on an asset or category, and not a precise shade. ISCC–NBS values are the sRGB centroid of the hue's 'strong' Level 3 block (olive: 'moderate'; neutrals: white, medium gray, black) from A. Jaffer, NBS/ISCC Color System Centroids (2003), http://tx4.us/nbs-iscc.htm."@en ;
+    rdfs:range xsd:string .
 
 common:depreciationRate a rdf:Property ;
     rdfs:label "Depreciation Rate (%)"@en, "Avskrivningssats (%)"@no ;

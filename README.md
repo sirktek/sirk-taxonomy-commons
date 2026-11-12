@@ -100,7 +100,7 @@ it names `common:Model` with `schema:domainIncludes`, so a domain can attach it 
 | `common:model` | Modell | `common:Model` |
 | `common:serialNumber` | Serienummer | `xsd:string` |
 | `common:variant` | Variant | `xsd:string` |
-| `common:color` | Farge | `xsd:string` |
+| `common:color` | Farge | `common:Color` enumeration |
 | `common:material` | Materiale | `xsd:string` |
 | `common:yearOfManufacture` | Produksjonsår (alt: Byggeår) | `xsd:integer` |
 | `common:installationYear` | Installasjonsår | `xsd:integer` |
@@ -136,6 +136,19 @@ norwegianLabel, description, jurisdiction, attributes)` sorted by notation then 
 `depreciationRate=4`. A consumer shows the values whose `jurisdiction` is `null` or equals the
 organisation's country, and needs no hardcoded list. This applies to every enumeration-typed
 property, e.g. `logistics:type` → `logistics:LocationType`.
+
+### Colour
+
+`common:color` ranges over `common:Color`: the thirteen ISCC–NBS Level 1 categories in their
+published order (NIST SP 440), then three extras that are not ISCC–NBS categories. Notations are
+zero-padded `01`–`16`; the stored value is the local name.
+
+`Pink`, `Red`, `Orange`, `Brown`, `Yellow`, `Olive`, `YellowGreen`, `Green`, `Blue`, `Purple`,
+`White`, `Gray`, `Black`, `Metallic`, `Transparent`, `Multicolored`
+
+`common:swatch` (`#rrggbb`, no domain) is a display hint on the individuals, surfaced in
+`EnumValue.attributes` under `swatch`. `Transparent` and `Multicolored` have none. Values are
+derived from A. Jaffer's NBS/ISCC centroids; `Metallic` is CSS `silver`.
 
 ### Jurisdiction tagging
 

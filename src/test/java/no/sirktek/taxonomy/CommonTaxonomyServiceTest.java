@@ -259,7 +259,7 @@ class CommonTaxonomyServiceTest {
 
         record Term(String name, String range, String en, String no) { }
         for (Term t : List.of(
-                new Term("color", xsd + "string", "Color", "Farge"),
+                new Term("color", ns + "Color", "Color", "Farge"),
                 new Term("material", xsd + "string", "Material", "Materiale"),
                 new Term("variant", xsd + "string", "Variant", "Variant"),
                 new Term("serialNumber", xsd + "string", "Serial Number", "Serienummer"),
@@ -296,12 +296,75 @@ class CommonTaxonomyServiceTest {
     }
 
     @Test
+    void colorIsIsccNbsLevelOnePlusThreeExtrasWithSwatches() {
+        Model model = loadCommonModel();
+        String ns = "http://taxonomy.sirktek.no/common#";
+        Property notation = model.createProperty("http://www.w3.org/2004/02/skos/core#notation");
+        Property swatch = model.createProperty(ns + "swatch");
+        Property domainIncludes = model.createProperty("https://schema.org/domainIncludes");
+
+        Resource colorClass = model.getResource(ns + "Color");
+        assertTrue(colorClass.getProperty(RDFS.comment, "en").getString().contains("NIST Special Publication 440"));
+
+        record C(String name, String en, String no, String hex) { }
+        List<C> expected = List.of(
+                new C("Pink", "Pink", "Rosa", "#ea9399"),
+                new C("Red", "Red", "Rød", "#bc3f4a"),
+                new C("Orange", "Orange", "Oransje", "#ed872d"),
+                new C("Brown", "Brown", "Brun", "#80461b"),
+                new C("Yellow", "Yellow", "Gul", "#d4af37"),
+                new C("Olive", "Olive", "Oliven", "#665d1e"),
+                new C("YellowGreen", "Yellow green", "Gulgrønn", "#7e9f2e"),
+                new C("Green", "Green", "Grønn", "#007959"),
+                new C("Blue", "Blue", "Blå", "#0067a5"),
+                new C("Purple", "Purple", "Lilla", "#875692"),
+                new C("White", "White", "Hvit", "#f2f3f4"),
+                new C("Gray", "Gray", "Grå", "#848482"),
+                new C("Black", "Black", "Svart", "#222222"),
+                new C("Metallic", "Metallic", "Metallisk", "#c0c0c0"),
+                new C("Transparent", "Transparent", "Gjennomsiktig", null),
+                new C("Multicolored", "Multicolored", "Flerfarget", null));
+        Set<String> extras = Set.of("Metallic", "Transparent", "Multicolored");
+
+        List<Resource> individuals = model.listResourcesWithProperty(RDF.type, colorClass).toList();
+        assertEquals(16, individuals.size());
+        for (int i = 0; i < expected.size(); i++) {
+            C c = expected.get(i);
+            Resource r = model.getResource(ns + c.name());
+            assertTrue(r.hasProperty(RDF.type, colorClass), c.name());
+            assertEquals(c.en(), r.getProperty(RDFS.label, "en").getString(), c.name());
+            assertEquals(c.no(), r.getProperty(RDFS.label, "no").getString(), c.name());
+            assertEquals(String.format("%02d", i + 1), r.getProperty(notation).getString(), c.name());
+            if (extras.contains(c.name())) {
+                assertTrue(r.getProperty(RDFS.comment, "en").getString().contains("Not an ISCC–NBS category"), c.name());
+            } else {
+                assertNull(r.getProperty(RDFS.comment), c.name());
+            }
+            if (c.hex() == null) {
+                assertNull(r.getProperty(swatch), c.name());
+            } else {
+                String hex = r.getRequiredProperty(swatch).getString();
+                assertEquals(c.hex(), hex, c.name());
+                assertTrue(hex.matches("^#[0-9a-f]{6}$"), c.name());
+            }
+        }
+
+        Resource sw = model.getResource(ns + "swatch");
+        assertEquals("http://www.w3.org/2001/XMLSchema#string", sw.getRequiredProperty(RDFS.range).getResource().getURI());
+        assertEquals("Swatch", sw.getProperty(RDFS.label, "en").getString());
+        assertEquals("Fargeprøve", sw.getProperty(RDFS.label, "no").getString());
+        assertTrue(sw.getProperty(RDFS.comment, "en").getString().contains("Jaffer"));
+        assertNull(sw.getProperty(RDFS.domain));
+        assertNull(sw.getProperty(domainIncludes));
+    }
+
+    @Test
     void sharedAssetPropertiesAttachToNoCommonsCategory() {
         List<CategoryInfo> all = new java.util.ArrayList<>();
         collect(taxonomyService.loadBaseTaxonomy().rootCategories(), all);
         for (CategoryInfo c : all) {
             Set<String> names = c.properties().stream().map(p -> p.name()).collect(Collectors.toSet());
-            assertTrue(names.stream().noneMatch(n -> Set.of("weight", "color", "serialNumber", "yearOfManufacture", "expectedServiceLife").contains(n)),
+            assertTrue(names.stream().noneMatch(n -> Set.of("weight", "color", "swatch", "serialNumber", "yearOfManufacture", "expectedServiceLife").contains(n)),
                     c.className() + " has " + names);
         }
     }
