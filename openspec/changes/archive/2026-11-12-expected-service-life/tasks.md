@@ -22,13 +22,13 @@ Files: `src/main/resources/taxonomy/common-base.ttl`,
 `src/test/java/no/sirktek/taxonomy/CommonTaxonomyServiceTest.java`, `README.md`.
 Tests: `mvnq test -Dtest='CommonTaxonomyServiceTest,DomainOptInLoaderTest'`
 
-- [ ] 1.1 Test first. In `sharedAssetPropertiesAreDeclaredWithoutDomain` add
+- [x] 1.1 Test first. In `sharedAssetPropertiesAreDeclaredWithoutDomain` add
       `new Term("expectedServiceLife", xsd + "integer", "Expected service life (years)", "Forventet levetid (år)")`;
       in `sharedAssetPropertiesAttachToNoCommonsCategory` add `expectedServiceLife` to the names.
       See it fail.
-- [ ] 1.2 `common-base.ttl`: add the term after `common:installationYear` (design D1).
-- [ ] 1.3 `README.md`: add the term to the "Shared asset properties" table.
-- [ ] 1.4 Run the group's tests, then `mvnq test` once, then
+- [x] 1.2 `common-base.ttl`: add the term after `common:installationYear` (design D1).
+- [x] 1.3 `README.md`: add the term to the "Shared asset properties" table.
+- [x] 1.4 Run the group's tests, then `mvnq test` once, then
       `openspec validate expected-service-life --strict`. Note the merge tag in the handoff.
 
 ### Group 2: sirk-furniture-taxonomy
@@ -39,12 +39,12 @@ version), `src/test/java/no/sirktek/taxonomy/CommonPropertyOptInTest.java`, `REA
 `furniture-common-properties`, design D2).
 Tests: `mvnq test -Dtest='CommonPropertyOptInTest,TaxonomyServiceTest,PropertyDefinitionTest'`
 
-- [ ] 2.1 Write the pointer proposal and delta spec; bump `taxonomy-commons` (3.26) to Group 1's tag.
-- [ ] 2.2 Test first: `Furniture` carries `expectedServiceLife` once, IRI
+- [x] 2.1 Write the pointer proposal and delta spec; bump `taxonomy-commons` (3.26) to Group 1's tag.
+- [x] 2.2 Test first: `Furniture` carries `expectedServiceLife` once, IRI
       `common#expectedServiceLife`, range `xsd:integer`, no `privateSet`. See it fail.
-- [ ] 2.3 Add the opt-in after the age opt-ins (design D2).
-- [ ] 2.4 `README.md` opt-in paragraph: name it.
-- [ ] 2.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
+- [x] 2.3 Add the opt-in after the age opt-ins (design D2).
+- [x] 2.4 `README.md` opt-in paragraph: name it.
+- [x] 2.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
 
 ### Group 3: sirk-machine-taxonomy
 
@@ -53,14 +53,14 @@ version), `src/test/java/no/sirktek/taxonomy/CommonPropertyOptInTest.java`, `REA
 `openspec/changes/expected-service-life/` (pointer proposal, delta for `machine-common-properties`).
 Tests: `mvnq test -Dtest='CommonPropertyOptInTest,TaxonomyServiceTest,PropertyDefinitionTest'`
 
-- [ ] 3.1 Write the pointer proposal and delta spec; bump `taxonomy-commons` (3.26) to Group 1's tag.
-- [ ] 3.2 Test first: `Machine` carries, once each with `common#` IRIs, `expectedServiceLife`
+- [x] 3.1 Write the pointer proposal and delta spec; bump `taxonomy-commons` (3.26) to Group 1's tag.
+- [x] 3.2 Test first: `Machine` carries, once each with `common#` IRIs, `expectedServiceLife`
       (`xsd:integer`, no `privateSet`), `newPriceExVAT` (`xsd:decimal`, `commercial`) and
       `emissionPerUnit` (range `common#EmissionEntry`, no `privateSet`). See it fail.
-- [ ] 3.3 Add the three opt-ins where design D2 places them, with their comments. No weight
+- [x] 3.3 Add the three opt-ins where design D2 places them, with their comments. No weight
       change: `common:weight` is already on `Machine`.
-- [ ] 3.4 `README.md`: name the three opt-ins.
-- [ ] 3.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
+- [x] 3.4 `README.md`: name the three opt-ins.
+- [x] 3.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
 
 ### Group 4: sirk-ict-taxonomy
 
@@ -70,13 +70,13 @@ version), `src/test/java/no/sirktek/taxonomy/CommonPropertyOptInTest.java`, `REA
 `ict-common-properties`).
 Tests: `mvnq test -Dtest='CommonPropertyOptInTest,TaxonomyServiceTest,PropertyDefinitionTest'`
 
-- [ ] 4.1 Write the pointer proposal and delta spec; bump `taxonomy-commons` (3.26) to Group 1's tag.
-- [ ] 4.2 Test first: add `expectedServiceLife`, `weight` and `emissionPerUnit` to `SHARED`;
+- [x] 4.1 Write the pointer proposal and delta spec; bump `taxonomy-commons` (3.26) to Group 1's tag.
+- [x] 4.2 Test first: add `expectedServiceLife`, `weight` and `emissionPerUnit` to `SHARED`;
       `Hardware` carries each once with a `common#` IRI and no `privateSet` (ranges `xsd:integer`,
       `xsd:decimal`, `common#EmissionEntry`); `Software` carries none of them. See it fail.
-- [ ] 4.3 Add the three opt-ins on `ict:Hardware` after `yearOfManufacture` (design D2).
-- [ ] 4.4 `README.md`: name the three with the Hardware opt-ins.
-- [ ] 4.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
+- [x] 4.3 Add the three opt-ins on `ict:Hardware` after `yearOfManufacture` (design D2).
+- [x] 4.4 `README.md`: name the three with the Hardware opt-ins.
+- [x] 4.5 Run the tests above, then `mvnq test` once. Merge; note the tag in the handoff.
 
 ### Group 5: sirk-orgadmin-backend — bump four in one commit
 
@@ -88,17 +88,17 @@ Files: `pom.xml` (only the commons, furniture, machine and ict versions, ~lines 
 Tests: `mvnq test -Dtest='CategoryPropertyInheritanceServiceTest,CategoryInheritancePinTest,CategoryServiceTest'`
 and `mvnq -DskipITs=false verify -Dit.test=PrivatePropertyTreeIT -Dtest=none -Dsurefire.failIfNoSpecifiedTests=false`
 
-- [ ] 5.1 Set the four versions to the tags from Groups 1–4; logistics stays 3.29.
-- [ ] 5.2 `CategoryInheritancePinTest`: add
+- [x] 5.1 Set the four versions to the tags from Groups 1–4; logistics stays 3.29.
+- [x] 5.2 `CategoryInheritancePinTest`: add
       `{"name":"expectedServiceLife","type":"INTEGER","source":"INHERITED","label":"Expected service life (years)"}`
       to the fixture JSON in name order; `globalFurnitureHasExactlyTheNineteenDefinitions` becomes
       twenty (name, set, count). The `privateSet` count stays two.
-- [ ] 5.2a `PrivatePropertyTreeIT.machineCarriesRentAndAccountingAndSubclassesInheritThem`: add
+- [x] 5.2a `PrivatePropertyTreeIT.machineCarriesRentAndAccountingAndSubclassesInheritThem`: add
       `newPriceExVAT` to the expected private names, in the order the service returns them
       (alphabetical today: after `monthlyRentExVAT`), and
       `assertPrivate(all, "newPriceExVAT", PropertyType.DECIMAL, "commercial", source)` to
       `assertMachineSet`.
-- [ ] 5.3 Run the tests above, then `mvnq -DskipITs=false verify` and `./mvnw clean -U pmd:check`
+- [x] 5.3 Run the tests above, then `mvnq -DskipITs=false verify` and `./mvnw clean -U pmd:check`
       once.
 
 ### Group 6: sirk-mcp-server — bump four in one commit
@@ -109,8 +109,8 @@ Files: `pom.xml` (only the `taxonomy-commons`, furniture, machine and ict `*.ver
 properties, lines ~30-34).
 Tests: `mvnq test`
 
-- [ ] 6.1 Set the four versions to the tags from Groups 1–4, in one commit.
-- [ ] 6.2 Run `mvnq test` once.
+- [x] 6.1 Set the four versions to the tags from Groups 1–4, in one commit.
+- [x] 6.2 Run `mvnq test` once.
 
 ## Not in scope
 
