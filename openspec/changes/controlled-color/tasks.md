@@ -215,26 +215,26 @@ Files:
 Tests: `yarn test --silent 2>&1 | tail -n 40`, plus `yarn lint` and `yarn tsc --noEmit` if the
 repo has them.
 
-- [ ] 5.1 Test first, in `propertyOptions.test.tsx`, following the spec `category-property-options`:
+- [x] 5.1 Test first, in `propertyOptions.test.tsx`, following the spec `category-property-options`:
   - a STRING property with options renders a select with option labels;
   - a stored value outside the options is shown as the selected extra entry;
   - with no options, the property renders a text input;
   - an option whose `attributes.swatch` is `#222222` draws a box, both in the menu and in
     `CategoryShow`;
   - an invalid or missing swatch draws none.
-- [ ] 5.2 Add `OptionSwatch`, per design D7.
-- [ ] 5.3 `SelectInput`:
+- [x] 5.2 Add `OptionSwatch`, per design D7.
+- [x] 5.3 `SelectInput`:
   - `SelectOption` gains `swatch?: string`;
   - each `MenuItem` renders `<OptionSwatch swatch={o.swatch} />` before its text.
-- [ ] 5.4 `PropertyValueInput`: before the `switch`, any property with non-empty `options` renders
+- [x] 5.4 `PropertyValueInput`: before the `switch`, any property with non-empty `options` renders
   `SelectInput`, from `options` plus the existing out-of-options extra entry, with the swatch
   taken from `attributes?.swatch`.
   - `DEPRECIATION_GROUP` keeps `depreciation_group_selection`.
   - Other types use the new `option_selection` key: en "Select a value", no "Velg en verdi".
-- [ ] 5.5 `PropertyEditor.isImmediate`: immediate type, or `!!property.options?.length`.
-- [ ] 5.6 `CategoryShow` (~line 399): when the property has options, display through
+- [x] 5.5 `PropertyEditor.isImmediate`: immediate type, or `!!property.options?.length`.
+- [x] 5.6 `CategoryShow` (~line 399): when the property has options, display through
   `enumValueLabel`, with the matching option's swatch before it.
-- [ ] 5.7 Run the tests. Production code contains no string `color`.
+- [x] 5.7 Run the tests. Production code contains no string `color`.
 
 ### Group 6: sirk-asset-frontend — swatch box in the editor
 
