@@ -104,7 +104,7 @@ Files:
 
 Tests: `make test` (pytest), plus `make lint` and `make typecheck`.
 
-- [ ] 2.1 Test first, in `test_taxonomy_loader.py`, with the fixture `mini-common.ttl`: three
+- [x] 2.1 Test first, in `test_taxonomy_loader.py`, with the fixture `mini-common.ttl`: three
   `common:Color` individuals with notations "02", "10", "01", plus one `common:Condition`
   individual. Cover:
   - `load_enum_locals(path, "http://taxonomy.sirktek.no/common#Color")` returns them in notation
@@ -112,17 +112,17 @@ Tests: `make test` (pytest), plus `make lint` and `make typecheck`.
   - a missing file raises `TaxonomyError`;
   - a class with no individuals raises `TaxonomyError`;
   - the existing `Taxonomy` tests stay green unchanged.
-- [ ] 2.1a Test first, in `test_taxonomy_loader.py`, for D3 "Which classes get a colour": with a
+- [x] 2.1a Test first, in `test_taxonomy_loader.py`, for D3 "Which classes get a colour": with a
   fixture domain TTL whose root carries `common:color schema:domainIncludes`, `has_property` is
   true for the root's grandchild, false for a class in a taxonomy without the statement, and false
   for an unknown URI.
-- [ ] 2.2 Test first, in `test_taxonomy_config.py`.
+- [x] 2.2 Test first, in `test_taxonomy_config.py`.
   - Assert the default `color_source` points at `sirk-taxonomy-commons/refs/tags/<Group 1
     tag>/…/common-base.ttl`. Env override is pydantic's behaviour; do not test it.
   - Add a lifespan test, modelled on `test_lifespan_loads_the_rest_when_one_fails`: when
     `color_source` does not exist, `state.classifiers` is empty and the log contains "colour list
     not loaded".
-- [ ] 2.3 Test first, in `test_anthropic_client.py`.
+- [x] 2.3 Test first, in `test_anthropic_client.py`.
   - The prompt lists exactly the colours passed in, contains no `beige` and no `patterned`, and
     states the nearest-value, `Multicolored` and `Transparent` rules.
   - `_parse_response` sets `color` to None for a value outside the list, drops out-of-list
@@ -132,13 +132,13 @@ Tests: `make test` (pytest), plus `make lint` and `make typecheck`.
   - Change `"black"` to `"Black"` in the fixtures and assertions.
   - `test_state_and_color_vocabulary_is_shared` loops over `STATE_LABELS` plus the passed colour
     list.
-- [ ] 2.4 Implement D3, Loading.
+- [x] 2.4 Implement D3, Loading.
   - In `loader.py`: extract `_parse(source)` and add `load_enum_locals`. `Taxonomy` behaviour is
     unchanged.
   - In `config.py`: add `color_source` and `color_class`.
   - In `main.py`: add `_load_colors`, and make `_load_classifiers(taxonomies, colors)` return `{}`
     with a warning when `colors` is None.
-- [ ] 2.5 Implement D3, Prompt and parse.
+- [x] 2.5 Implement D3, Prompt and parse.
   - Delete `COLOR_LABELS`.
   - Read `data.get("color")`. A missing, null or non-dict `color`, or one with an off-list
     `value`, becomes None through one path.
@@ -147,17 +147,17 @@ Tests: `make test` (pytest), plus `make lint` and `make typecheck`.
   - `ClassificationResult.color` becomes optional, and `routes/classify.py` maps None to `null`.
   - Update the `ColorPrediction.value` description to "one of the commons colour local names",
     and the `"black"` fixtures in `conftest.py` and `test_routes.py`.
-- [ ] 2.5a Implement D3, "Which classes get a colour": `Taxonomy.has_property`, the
+- [x] 2.5a Implement D3, "Which classes get a colour": `Taxonomy.has_property`, the
   `color_property` setting, and the gate in `AnthropicClassifier.classify`. Test first in
   `test_anthropic_client.py`: a primary class without `common:color` (and an unresolved primary
   IRI) yields `color` None and empty `top_colors`; a furniture class keeps both.
-- [ ] 2.6 In `infra/setup.sh` step 4b:
+- [x] 2.6 In `infra/setup.sh` step 4b:
   - fetch `color_source`'s default to `${TAXONOMY_DIR}/common-base.ttl`;
   - write `COLOR_SOURCE=` into the env file.
 
   Also change the example in `docs/backend-integration.md:135` to `"Black"`. `docs/design.md`'s
   SigLIP history stays.
-- [ ] 2.7 Run the tests. Deploy after Group 3. Deploying iris means rerunning `infra/setup.sh`:
+- [x] 2.7 Run the tests. Deploy after Group 3. Deploying iris means rerunning `infra/setup.sh`:
   that run fetches `common-base.ttl` and writes `COLOR_SOURCE`. Without it, iris fetches the
   default URL at every startup and loses offline operation. Say this in the handoff.
 
@@ -174,9 +174,9 @@ Tests:
 - `mvnq test -Dtest='CategoryInheritancePinTest,RdfsCategoryPropertyInheritanceTest,CategoryPropertyInheritanceServiceTest'`
 - then once, at the end: `mvnq -DskipITs=false verify` and `mvnq -U pmd:check`
 
-- [ ] 3.1 Set the commons version to the Group 1 tag. The furniture and machine versions are
+- [x] 3.1 Set the commons version to the Group 1 tag (3.31). The furniture and machine versions are
   unchanged: the backend loads `common-base.ttl` from the commons jar it pins.
-- [ ] 3.2 In `CategoryInheritancePinTest.EXPECTED_JSON`, the `color` entry gains
+- [x] 3.2 In `CategoryInheritancePinTest.EXPECTED_JSON`, the `color` entry gains
   `"targetRootClass":"Color"` and the sixteen options in notation order, each in the shape the
   `condition` entry uses.
   - `attributes` is `{"swatch":"#rrggbb"}`, or `{}` for `Transparent` and `Multicolored`.
@@ -185,12 +185,12 @@ Tests:
     (`EnumOptionDto` is NON_NULL). `Metallic`, `Transparent` and `Multicolored` carry their
     `description` (the D1 comment text). Do not invent descriptions for the others.
   - Take the values from design D2; do not regenerate the JSON blindly.
-- [ ] 3.3 Add a test after `conditionIsAStringWithFiveOrderedGradesOnFurnitureIctHardwareAndMachine`
+- [x] 3.3 Add a test after `conditionIsAStringWithFiveOrderedGradesOnFurnitureIctHardwareAndMachine`
   asserting that `color` on Chair, Furniture and Machine:
   - is `STRING` with `targetRootClass` `Color`;
   - has the sixteen options in order;
   - has `Black`'s `attributes.swatch` = `#222222`.
-- [ ] 3.4 Run the tests.
+- [x] 3.4 Run the tests.
   - `V1.4.1__CategoryData.sql`'s null `color` seed stays.
   - No production code changes.
 
@@ -201,7 +201,7 @@ Prerequisite: Group 1 released.
 Files: `pom.xml` (only the commons version property, ~lines 30-34).
 Tests: `mvnq test`
 
-- [ ] 4.1 Set the commons version to the Group 1 tag. Run the tests. In the handoff, name the
+- [x] 4.1 Set the commons version to the Group 1 tag (3.31, sirk-mcp-server #30). Run the tests. In the handoff, name the
   version range the bump spans from the base you branched from. origin/main is already on
   3.29, so it should bring only the new tag. If the base pins an older commons, list every
   version it skips (3.27–3.29 from the local branch's 3.26).
@@ -257,18 +257,18 @@ Files:
 
 Tests: `yarn test --silent 2>&1 | tail -n 40`
 
-- [ ] 6.1 Test first, in `PropertiesSection.options.test.tsx`, following the spec
+- [x] 6.1 Test first, in `PropertiesSection.options.test.tsx`, following the spec
   `asset-property-swatches`:
   - an option whose `attributes.swatch` is `#222222` draws a box, both in the select and in the
     read display;
   - an option without a swatch draws none;
   - an out-of-list stored value appears as the marked extra entry, with no box.
-- [ ] 6.2 Add `OptionSwatch`, per design D7.
-- [ ] 6.3 Render it before `optionLabel(...)`, both in `EnumPropertyEditor`'s `MenuItem`s and in
+- [x] 6.2 Add `OptionSwatch`, per design D7.
+- [x] 6.3 Render it before `optionLabel(...)`, both in `EnumPropertyEditor`'s `MenuItem`s and in
   `PropertyValueDisplay`'s option branch.
-- [ ] 6.4 Grep to confirm nothing reads `ColorLabel`, `TopColor` or the `color.label` i18n blocks,
+- [x] 6.4 Grep to confirm nothing reads `ColorLabel`, `TopColor` or the `color.label` i18n blocks,
   then delete them.
-- [ ] 6.5 Run the tests. `ASSET_LIST_PROPERTIES`, `EditableOptionChip` and `PropertyValueChip`
+- [x] 6.5 Run the tests. `ASSET_LIST_PROPERTIES`, `EditableOptionChip` and `PropertyValueChip`
   stay untouched.
 
 ## Not in scope
