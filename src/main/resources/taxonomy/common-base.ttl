@@ -238,6 +238,11 @@ common:installationYear a rdf:Property ;
     rdfs:comment "The year the item was installed or put into use (four-digit year)"@en ;
     rdfs:range xsd:integer .
 
+common:expectedServiceLife a rdf:Property ;
+    rdfs:label "Expected service life (years)"@en, "Forventet levetid (år)"@no ;
+    rdfs:comment "Expected service life of a new item, in whole years. Set on a category it is the default for every item in that category; set on an asset it replaces the category value for that item"@en ;
+    rdfs:range xsd:integer .
+
 # Condition grades (as individual instances, like common:DepreciationGroup).
 # The stored value is the local name, e.g. "Good"; skos:notation gives the
 # order from best to worst, which the loader sorts options by.

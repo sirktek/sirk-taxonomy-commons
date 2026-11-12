@@ -104,6 +104,7 @@ it names `common:Model` with `schema:domainIncludes`, so a domain can attach it 
 | `common:material` | Materiale | `xsd:string` |
 | `common:yearOfManufacture` | Produksjonsår (alt: Byggeår) | `xsd:integer` |
 | `common:installationYear` | Installasjonsår | `xsd:integer` |
+| `common:expectedServiceLife` | Forventet levetid (år) | `xsd:integer` |
 | `common:operationsAndMaintenanceManual` | Drift- og vedlikeholdshåndbok | `xsd:anyURI` |
 | `common:length` | Lengde (cm) | `xsd:decimal` |
 | `common:width` | Bredde (cm) | `xsd:decimal` |
