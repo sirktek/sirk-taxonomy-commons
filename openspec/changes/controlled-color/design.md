@@ -202,9 +202,14 @@ This is the smallest extension of `app/taxonomy/loader.py`, `app/config.py` and 
 
 ### Prompt and parse
 
-- `AnthropicClassifier.__init__` takes `colors: list[str]` and passes it to
-  `_build_system_prompt(taxonomy, cfg, colors)`, whose colour bullets are `- {c}` for each
-  colour. `COLOR_LABELS` is deleted.
+- `AnthropicClassifier.__init__` takes `colors: list[str]` and `color_property: str` and passes
+  the colours to `_build_system_prompt(taxonomy, cfg, colors)`, whose colour bullets are `- {c}`
+  for each colour. `COLOR_LABELS` is deleted.
+- When no class of the taxonomy carries `common:color` (see "Which classes get a colour"; today
+  ICT), `__init__` passes `[]` instead, and the prompt leaves out the colour item, the colour list,
+  the colour rules and the `color`/`top_colors` fields of the JSON example. This saves the tokens
+  for a colour the gate would always discard. A taxonomy with any coloured class gets the full
+  prompt below.
 - The prompt states:
   - pick the **nearest** colour from the list, spelled exactly as listed, and never a word that
     is not in it;
@@ -219,7 +224,11 @@ This is the smallest extension of `app/taxonomy/loader.py`, `app/config.py` and 
     missing, null or not an object takes the same path to None. Today
     `data["color"]["value"]` raises, which becomes `AnthropicClassifierError` and loses the
     category, state and description as well.
-  - Each `top_colors` entry not in `colors` is dropped.
+  - A `color` whose confidence is missing, null or not a number is also None.
+  - Each `top_colors` entry not in `colors`, or not an object with a value and a numeric
+    confidence, is dropped; `top_colors` that is not a list is `[]`.
+  - When a primary colour or any `top_colors` entry is dropped, one WARNING line is logged
+    for the response.
   - Matching is exact. There is no case-folding or mapping, since that would be a mapping
     table.
   - `ClassificationResult.color` becomes `ColorPrediction | None`.
@@ -245,7 +254,8 @@ taxonomy.
   a plain default beside `color_class`.
 - **Gate.** In `AnthropicClassifier.classify`, after the IRIs are attached: when the primary
   category's IRI is None or `has_property` is false, `color` is None and `top_colors` is `[]`.
-  The prompt is unchanged (the class is chosen in the same call, so the gate is after the fact).
+  The class is chosen in the same call, so the gate is after the fact. The prompt omits colour
+  only for a taxonomy with no coloured class at all (see "Prompt and parse").
 - **app-backend needs no change.** `ClassificationApplier` already writes nothing when `color`
   is null. The gate follows iris's predicted class; an asset whose user-set category differs from
   the prediction is not re-checked (accepted).
