@@ -229,6 +229,27 @@ This is the smallest extension of `app/taxonomy/loader.py`, `app/config.py` and 
   - `color` is null or `{value, confidence}` with `value` one of the loaded local names;
   - `top_colors` is a list, possibly empty, of the same shape, with every value from the list;
   - `state` is unchanged and still unvalidated.
+### Which classes get a colour
+
+iris returns a colour only for a class that carries `common:color`. Today that is every furniture
+and machine class (`common:color schema:domainIncludes furniture:Furniture` /
+`machine:Machine`) and no ICT class. The rule is read from the taxonomy data, not hard-coded per
+taxonomy.
+
+- **Loader.** `Taxonomy` gains `has_property(class_uri, property_iri) -> bool`: true when the
+  class or any ancestor, the taxonomy root included, is an object of
+  `<property_iri> schema:domainIncludes ?c` (`schema:` = `https://schema.org/`) in the graph the
+  taxonomy was parsed from. The domain statements are collected in `_from_graph` from the same
+  domain TTL iris already loads; no extra fetch. A class unknown to the taxonomy is false.
+- **Config.** `Settings` gains `color_property: str = "http://taxonomy.sirktek.no/common#color"`,
+  a plain default beside `color_class`.
+- **Gate.** In `AnthropicClassifier.classify`, after the IRIs are attached: when the primary
+  category's IRI is None or `has_property` is false, `color` is None and `top_colors` is `[]`.
+  The prompt is unchanged (the class is chosen in the same call, so the gate is after the fact).
+- **app-backend needs no change.** `ClassificationApplier` already writes nothing when `color`
+  is null. The gate follows iris's predicted class; an asset whose user-set category differs from
+  the prediction is not re-checked (accepted).
+
 - `beige` and `patterned` no longer appear anywhere in iris. The lower-case `"black"` examples
   in tests and `docs/backend-integration.md` become `"Black"`.
 

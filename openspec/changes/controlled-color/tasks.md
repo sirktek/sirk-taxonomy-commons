@@ -112,6 +112,10 @@ Tests: `make test` (pytest), plus `make lint` and `make typecheck`.
   - a missing file raises `TaxonomyError`;
   - a class with no individuals raises `TaxonomyError`;
   - the existing `Taxonomy` tests stay green unchanged.
+- [ ] 2.1a Test first, in `test_taxonomy_loader.py`, for D3 "Which classes get a colour": with a
+  fixture domain TTL whose root carries `common:color schema:domainIncludes`, `has_property` is
+  true for the root's grandchild, false for a class in a taxonomy without the statement, and false
+  for an unknown URI.
 - [ ] 2.2 Test first, in `test_taxonomy_config.py`.
   - Assert the default `color_source` points at `sirk-taxonomy-commons/refs/tags/<Group 1
     tag>/…/common-base.ttl`. Env override is pydantic's behaviour; do not test it.
@@ -143,6 +147,10 @@ Tests: `make test` (pytest), plus `make lint` and `make typecheck`.
   - `ClassificationResult.color` becomes optional, and `routes/classify.py` maps None to `null`.
   - Update the `ColorPrediction.value` description to "one of the commons colour local names",
     and the `"black"` fixtures in `conftest.py` and `test_routes.py`.
+- [ ] 2.5a Implement D3, "Which classes get a colour": `Taxonomy.has_property`, the
+  `color_property` setting, and the gate in `AnthropicClassifier.classify`. Test first in
+  `test_anthropic_client.py`: a primary class without `common:color` (and an unresolved primary
+  IRI) yields `color` None and empty `top_colors`; a furniture class keeps both.
 - [ ] 2.6 In `infra/setup.sh` step 4b:
   - fetch `color_source`'s default to `${TAXONOMY_DIR}/common-base.ttl`;
   - write `COLOR_SOURCE=` into the env file.
