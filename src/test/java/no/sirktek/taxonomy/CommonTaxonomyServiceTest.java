@@ -273,6 +273,7 @@ class CommonTaxonomyServiceTest {
                 new Term("volume", xsd + "decimal", "Volume (m³)", "Volum (m³)"),
                 new Term("yearOfManufacture", xsd + "integer", "Year of manufacture", "Produksjonsår"),
                 new Term("installationYear", xsd + "integer", "Installation year", "Installasjonsår"),
+                new Term("expectedServiceLife", xsd + "integer", "Expected service life (years)", "Forventet levetid (år)"),
                 new Term("controlChecklist", ns + "ChecklistTemplateEntry", "Checklist", "Sjekkliste"))) {
             Resource p = model.getResource(ns + t.name());
             assertEquals(t.range(), p.getRequiredProperty(RDFS.range).getResource().getURI(), t.name());
@@ -300,7 +301,7 @@ class CommonTaxonomyServiceTest {
         collect(taxonomyService.loadBaseTaxonomy().rootCategories(), all);
         for (CategoryInfo c : all) {
             Set<String> names = c.properties().stream().map(p -> p.name()).collect(Collectors.toSet());
-            assertTrue(names.stream().noneMatch(n -> Set.of("weight", "color", "serialNumber", "yearOfManufacture").contains(n)),
+            assertTrue(names.stream().noneMatch(n -> Set.of("weight", "color", "serialNumber", "yearOfManufacture", "expectedServiceLife").contains(n)),
                     c.className() + " has " + names);
         }
     }
