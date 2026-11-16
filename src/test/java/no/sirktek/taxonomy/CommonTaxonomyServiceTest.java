@@ -359,6 +359,17 @@ class CommonTaxonomyServiceTest {
     }
 
     @Test
+    void everyDescribedCommonClassHasANorwegianDescription() {
+        List<CategoryInfo> all = new java.util.ArrayList<>();
+        collect(taxonomyService.loadBaseTaxonomy().rootCategories(), all);
+        for (CategoryInfo c : all) {
+            if (c.description() != null) {
+                assertNotNull(c.norwegianDescription(), c.className() + " lacks an rdfs:comment@no");
+            }
+        }
+    }
+
+    @Test
     void sharedAssetPropertiesAttachToNoCommonsCategory() {
         List<CategoryInfo> all = new java.util.ArrayList<>();
         collect(taxonomyService.loadBaseTaxonomy().rootCategories(), all);

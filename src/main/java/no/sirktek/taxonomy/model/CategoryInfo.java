@@ -14,7 +14,8 @@ import java.util.List;
  *                           canonical English label, e.g., "Sitting Furniture" → SeatingFurniture.
  *                           Defaults to an empty list when no alt labels are declared.
  * @param norwegianName      Norwegian label for the category
- * @param description        Human-readable description
+ * @param description        English description (rdfs:comment@en, else a comment in any language)
+ * @param norwegianDescription Norwegian description (rdfs:comment@no), null when none
  * @param parentClassName    The parent category's class name, null for root categories
  * @param uri                Complete URI of this RDF class
  * @param properties         Properties defined for this category
@@ -27,6 +28,7 @@ public record CategoryInfo(
         List<String> englishAltLabels,
         String norwegianName,
         String description,
+        String norwegianDescription,
         String parentClassName,
         String uri,
         List<PropertyDefinition> properties,

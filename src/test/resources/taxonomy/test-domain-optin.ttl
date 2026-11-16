@@ -9,6 +9,15 @@
 testdomain:TestBuilding a rdfs:Class ;
     rdfs:label "Test Building"@en .
 
+testdomain:TestDescribed a rdfs:Class ;
+    rdfs:label "Test Described"@en ;
+    rdfs:comment "English text"@en ;
+    rdfs:comment "Norsk tekst"@no .
+
+testdomain:TestEnglishOnly a rdfs:Class ;
+    rdfs:label "Test English Only"@en ;
+    rdfs:comment "Only English"@en .
+
 testdomain:floors a rdf:Property ;
     rdfs:label "Floors"@en ;
     rdfs:domain testdomain:TestBuilding ;
