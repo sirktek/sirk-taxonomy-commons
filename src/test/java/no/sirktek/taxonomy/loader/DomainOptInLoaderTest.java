@@ -43,6 +43,16 @@ class DomainOptInLoaderTest {
     }
 
     @Test
+    void classCommentsLandInTheirLanguageField() {
+        CategoryInfo both = tree.findByClassName("TestDescribed");
+        assertEquals("English text", both.description());
+        assertEquals("Norsk tekst", both.norwegianDescription());
+        CategoryInfo en = tree.findByClassName("TestEnglishOnly");
+        assertEquals("Only English", en.description());
+        assertNull(en.norwegianDescription());
+    }
+
+    @Test
     void conditionGradesRunFromBestToWorstBySkosNotation() {
         assertEquals(List.of("New", "LikeNew", "Good", "Worn", "NeedsRepair"),
                 props.get("condition").enumValues().stream().map(EnumValue::name).toList());

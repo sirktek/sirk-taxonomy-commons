@@ -20,19 +20,23 @@
 
 common:Manufacturer a rdfs:Class ;
     rdfs:label "Manufacturer"@en, "Produsent"@no ;
-    rdfs:comment "Manufacturer or supplier of a product"@en .
+    rdfs:comment "Manufacturer or supplier of a product"@en ;
+    rdfs:comment "Produsent eller leverandør av et produkt"@no .
 
 common:Model a rdfs:Class ;
     rdfs:label "Model"@en, "Modell"@no ;
-    rdfs:comment "Specific product model produced by a manufacturer"@en .
+    rdfs:comment "Specific product model produced by a manufacturer"@en ;
+    rdfs:comment "Bestemt produktmodell fra en produsent"@no .
 
 common:Department a rdfs:Class ;
     rdfs:label "Department"@en, "Avdeling"@no ;
-    rdfs:comment "Organizational department; departments nest by sub-categorisation"@en .
+    rdfs:comment "Organizational department; departments nest by sub-categorisation"@en ;
+    rdfs:comment "Organisatorisk avdeling; avdelinger nøstes ved underkategorisering"@no .
 
 common:Resource a rdfs:Class ;
     rdfs:label "Resource"@en, "Ressurs"@no ;
-    rdfs:comment "Material or resource consumed in producing a product (LCA input side)"@en .
+    rdfs:comment "Material or resource consumed in producing a product (LCA input side)"@en ;
+    rdfs:comment "Materiale eller ressurs som forbrukes ved produksjon av et produkt (LCA-inngangssiden)"@no .
 
 # -------------------------------------------------------------------
 # Property range marker classes
@@ -46,27 +50,33 @@ common:Resource a rdfs:Class ;
 
 common:EmissionEntry a rdfs:Class ;
     rdfs:label "Emission Entry"@en ;
-    rdfs:comment "A per-LCA-module CO2e emission entry (module, amount, unit, certification, source)"@en .
+    rdfs:comment "A per-LCA-module CO2e emission entry (module, amount, unit, certification, source)"@en ;
+    rdfs:comment "En CO2e-utslippspost per LCA-modul (modul, mengde, enhet, sertifisering, kilde)"@no .
 
 common:ConsistsOfEntry a rdfs:Class ;
     rdfs:label "Consists Of Entry"@en ;
-    rdfs:comment "A bill-of-materials entry: component category reference with an amount (categoryId, amount)"@en .
+    rdfs:comment "A bill-of-materials entry: component category reference with an amount (categoryId, amount)"@en ;
+    rdfs:comment "En stykklistepost: referanse til en komponentkategori med en mengde (categoryId, amount)"@no .
 
 common:EnergySourceEntry a rdfs:Class ;
     rdfs:label "Energy Source Entry"@en ;
-    rdfs:comment "An energy mix entry (source, amount, co2ePerUnit) describing a portion of an energy consumption profile"@en .
+    rdfs:comment "An energy mix entry (source, amount, co2ePerUnit) describing a portion of an energy consumption profile"@en ;
+    rdfs:comment "En energimiksspost (kilde, mengde, co2ePerUnit) som beskriver en andel av en energiforbruksprofil"@no .
 
 common:AllocationEntry a rdfs:Class ;
     rdfs:label "Allocation Entry"@en ;
-    rdfs:comment "One allocation bucket on a location: a named capacity dimension (e.g. storage volume, workstation count) with the share of the location's yearly emissions that should be attributed to it"@en .
+    rdfs:comment "One allocation bucket on a location: a named capacity dimension (e.g. storage volume, workstation count) with the share of the location's yearly emissions that should be attributed to it"@en ;
+    rdfs:comment "Én fordelingsgruppe på en lokasjon: en navngitt kapasitetsdimensjon (f.eks. lagervolum, antall arbeidsplasser) med andelen av lokasjonens årlige utslipp som skal henføres til den"@no .
 
 common:AssetValuationEntry a rdfs:Class ;
     rdfs:label "Asset Valuation Entry"@en ;
-    rdfs:comment "The values of one asset at the end of one fiscal year: year (integer, the year the fiscal year ends), bookValue (carrying amount after accounting depreciation), taxValue (tax written-down value, saldoverdi), wealthValue (formuesverdi, Norway only). Amounts are decimals in NOK; every field but year is optional. Same names and shape as ledger17's acct:AssetValuation"@en .
+    rdfs:comment "The values of one asset at the end of one fiscal year: year (integer, the year the fiscal year ends), bookValue (carrying amount after accounting depreciation), taxValue (tax written-down value, saldoverdi), wealthValue (formuesverdi, Norway only). Amounts are decimals in NOK; every field but year is optional. Same names and shape as ledger17's acct:AssetValuation"@en ;
+    rdfs:comment "Verdiene til én eiendel ved slutten av ett regnskapsår: year (heltall, året regnskapsåret slutter), bookValue (bokført verdi etter regnskapsmessig avskrivning), taxValue (skattemessig nedskrevet verdi, saldoverdi), wealthValue (formuesverdi, kun Norge). Beløp er desimaltall i NOK; alle felt unntatt year er valgfrie. Samme navn og form som ledger17s acct:AssetValuation"@no .
 
 common:ChecklistTemplateEntry a rdfs:Class ;
     rdfs:label "Checklist Template"@en, "Sjekkliste"@no ;
-    rdfs:comment "One JSON-encoded ChecklistTemplate v1 (the cross-repo checklists contract, sirk-service-backend openspec/changes/checklists): {version: 1, items: [{key, text, guidance, required, responseType}]} with 1-100 items; key matches ^[a-z0-9][a-z0-9_-]{0,63}$ and is unique; text is non-blank and at most 500 characters after trim; guidance is optional and at most 2000; required is true or false; responseType is CHECK. A property with this range holds the whole template as one JSON string"@en .
+    rdfs:comment "One JSON-encoded ChecklistTemplate v1 (the cross-repo checklists contract, sirk-service-backend openspec/changes/checklists): {version: 1, items: [{key, text, guidance, required, responseType}]} with 1-100 items; key matches ^[a-z0-9][a-z0-9_-]{0,63}$ and is unique; text is non-blank and at most 500 characters after trim; guidance is optional and at most 2000; required is true or false; responseType is CHECK. A property with this range holds the whole template as one JSON string"@en ;
+    rdfs:comment "Én JSON-kodet ChecklistTemplate v1 (sjekklistekontrakten på tvers av repoer, sirk-service-backend openspec/changes/checklists): {version: 1, items: [{key, text, guidance, required, responseType}]} med 1-100 punkter; key matcher ^[a-z0-9][a-z0-9_-]{0,63}$ og er unik; text er ikke tom og har høyst 500 tegn etter trimming; guidance er valgfri og har høyst 2000; required er true eller false; responseType er CHECK. En egenskap med dette verdiområdet holder hele malen som én JSON-streng"@no .
 
 # -------------------------------------------------------------------
 # Manufacturer properties
@@ -249,7 +259,8 @@ common:expectedServiceLife a rdf:Property ;
 # order from best to worst, which the loader sorts options by.
 common:Condition a rdfs:Class ;
     rdfs:label "Condition"@en, "Tilstand"@no ;
-    rdfs:comment "Enumeration of physical condition grades, from unused to in need of repair"@en .
+    rdfs:comment "Enumeration of physical condition grades, from unused to in need of repair"@en ;
+    rdfs:comment "Oppramsing av fysiske tilstandsgrader, fra ubrukt til trenger reparasjon"@no .
 
 common:New a common:Condition ;
     skos:notation "1" ;
@@ -281,7 +292,8 @@ common:NeedsRepair a common:Condition ;
 # ISCC–NBS Level 1 order, zero-padded so a string sort keeps it.
 common:Color a rdfs:Class ;
     rdfs:label "Color"@en, "Farge"@no ;
-    rdfs:comment "The thirteen ISCC–NBS Level 1 colour categories (Kelly & Judd, NIST Special Publication 440, 1976), in their published order, plus three extras of our own (Metallic, Transparent, Multicolored) that are not ISCC–NBS categories."@en .
+    rdfs:comment "The thirteen ISCC–NBS Level 1 colour categories (Kelly & Judd, NIST Special Publication 440, 1976), in their published order, plus three extras of our own (Metallic, Transparent, Multicolored) that are not ISCC–NBS categories."@en ;
+    rdfs:comment "De tretten ISCC–NBS nivå 1-fargekategoriene (Kelly & Judd, NIST Special Publication 440, 1976), i publisert rekkefølge, pluss tre egne tillegg (Metallic, Transparent, Multicolored) som ikke er ISCC–NBS-kategorier."@no .
 
 common:Pink a common:Color ;
     rdfs:label "Pink"@en, "Rosa"@no ;
@@ -448,6 +460,7 @@ common:depreciationGroup a rdf:Property ;
 common:DepreciationGroup a rdfs:Class ;
     rdfs:label "Tax Depreciation Group"@en, "Saldogruppe"@no ;
     rdfs:comment "Enumeration of statutory tax depreciation classes, one set per jurisdiction (common:jurisdiction on each instance). Norwegian instances (saldogruppe a–j, skatteloven § 14-41) carry the maximum yearly rate per § 14-43 as common:depreciationRate (percent) and the statutory letter as skos:notation"@en ;
+    rdfs:comment "Oppramsing av lovfestede skattemessige avskrivningsgrupper, ett sett per jurisdiksjon (common:jurisdiction på hver instans). Norske instanser (saldogruppe a–j, skatteloven § 14-41) har høyeste årlige sats etter § 14-43 som common:depreciationRate (prosent) og den lovfestede bokstaven som skos:notation"@no ;
     rdfs:seeAlso <https://lovdata.no/lov/1999-03-26-14/§14-43> .
 
 common:swatch a rdf:Property ;

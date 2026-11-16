@@ -218,6 +218,7 @@ public abstract class RdfsTaxonomyLoader {
                 .englishAltLabels(category.englishAltLabels())
                 .norwegianName(category.norwegianName())
                 .description(category.description())
+                .norwegianDescription(category.norwegianDescription())
                 .parentClassName(category.parentClassName())
                 .uri(category.uri())
                 .properties(category.properties())
@@ -242,11 +243,8 @@ public abstract class RdfsTaxonomyLoader {
         }
 
         // Get comment/description
-        String description = null;
-        Statement commentStmt = classResource.getProperty(RDFS.comment);
-        if (commentStmt != null) {
-            description = commentStmt.getString();
-        }
+        String description = getLabelOrAny(classResource, RDFS.comment);
+        String norwegianDescription = getLiteral(classResource, RDFS.comment, "no");
 
         // Get parent class
         String parentClassName = null;
@@ -269,6 +267,7 @@ public abstract class RdfsTaxonomyLoader {
                 .englishAltLabels(englishAltLabels)
                 .norwegianName(norwegianName)
                 .description(description)
+                .norwegianDescription(norwegianDescription)
                 .parentClassName(parentClassName)
                 .uri(uri)
                 .properties(properties)
@@ -280,7 +279,14 @@ public abstract class RdfsTaxonomyLoader {
      * Get the localized label for a resource
      */
     private String getLabel(Resource resource, String language) {
-        StmtIterator labelStatements = resource.listProperties(RDFS.label);
+        return getLiteral(resource, RDFS.label, language);
+    }
+
+    /**
+     * Get the literal of a predicate tagged with the given language, or null
+     */
+    private String getLiteral(Resource resource, Property predicate, String language) {
+        StmtIterator labelStatements = resource.listProperties(predicate);
         while (labelStatements.hasNext()) {
             Statement stmt = labelStatements.nextStatement();
             Literal literal = stmt.getLiteral();
